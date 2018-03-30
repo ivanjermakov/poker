@@ -54,5 +54,24 @@ class Poker {
 		for (int i = 0; i < 5; i++) {
 			System.out.print(Card.toShortString(cards.get(i)) + " ");
 		}
+		System.out.println();
+	}
+
+	void flop() {
+		System.out.print("Flop: ");
+		for (int i = 0; i < 3; i++) {
+			System.out.print(Card.toShortString(cards.get(i)) + " ");
+		}
+		System.out.println();
+	}
+
+	void turn() {
+		System.out.print("Turn: " + Card.toShortString(cards.get(3)) + " ");
+		System.out.println();
+	}
+
+	void river() {
+		System.out.print("River: " + Card.toShortString(cards.get(4)) + " ");
+		System.out.println();
 	}
 }

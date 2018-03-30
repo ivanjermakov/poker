@@ -88,13 +88,13 @@ class Card {
 				suit = "♣";
 				break;
 			case HEARTS:
-				suit = "♥";
+				suit = "\u001B[31m" + "♥" + "\u001B[0m";
 				break;
 			case SPADES:
 				suit = "♠";
 				break;
 			case DIAMONDS:
-				suit = "♦";
+				suit = "\u001B[31m" + "♦" + "\u001B[0m";
 				break;
 			default:
 				suit = "und";
