@@ -48,4 +48,11 @@ class Poker {
 	Poker() {
 		fill();
 	}
+
+	void hand() {
+		System.out.print("Hand: ");
+		for (int i = 0; i < 5; i++) {
+			System.out.print(Card.toShortString(cards.get(i)) + " ");
+		}
+	}
 }
