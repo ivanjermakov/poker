@@ -42,10 +42,12 @@ public class Stats {
 		int rank = deck.get(0).rank.value;
 		for (int i = 0; i < 5; i++) {
 			//Ace as 1
-			if (i == 4) {
-				if (deck.get(i - 1).rank.value == 2 && deck.get(i).rank.value == 14) {
-					return true;
-				}
+			if (deck.get(0).rank.value == 14 &&
+					deck.get(1).rank.value == 5 &&
+					deck.get(2).rank.value == 4 &&
+					deck.get(3).rank.value == 3 &&
+					deck.get(4).rank.value == 2) {
+				return true;
 			}
 			if (deck.get(i).rank.value != rank) {
 				return false;
@@ -251,7 +253,13 @@ public class Stats {
 		switch (ranking) {
 			case STRAIGHT_FLUSH:
 			case STRAIGHT:
-				rankingKickers.add(bestHand.get(4));
+				//Ace as 1
+				if (bestHand.get(0).rank.value == 14 && bestHand.get(4).rank.value == 2) {
+					//add Ace
+					rankingKickers.add(bestHand.get(0));
+				} else {
+					rankingKickers.add(bestHand.get(4));
+				}
 				break;
 			case FOUR_OF_A_KIND:
 				rankingKickers.add(bestHand.get(1));

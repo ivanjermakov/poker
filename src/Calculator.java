@@ -3,7 +3,7 @@ import java.util.Vector;
 
 public class Calculator {
 
-	private void sortPlayers() {
+	private void sortPlayersStats() {
 		//sort by ranking
 		boolean isSorted = false;
 		while (!isSorted) {
@@ -17,22 +17,52 @@ public class Calculator {
 			}
 		}
 
-		//sort by ranking kickers
+//		sort by ranking kickers
 		isSorted = false;
 		while (!isSorted) {
 			isSorted = true;
 
 			for (int i = 0; i < playersStats.size() - 1; i++) {
-				if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking) {
-					if (playersStats.get(i).rankingKickers.get(0).rank.value < playersStats.get(i + 1).rankingKickers.get(0).rank.value) {
-						isSorted = false;
-						Collections.swap(playersStats, i, i + 1);
-					} else if (playersStats.get(i).rankingKickers.get(0).rank == playersStats.get(i + 1).rankingKickers.get(0).rank) {
-						if (playersStats.get(i).rankingKickers.size() == 2) {
-							if (playersStats.get(i).rankingKickers.get(1).rank.value < playersStats.get(i + 1).rankingKickers.get(1).rank.value) {
-								isSorted = false;
-								Collections.swap(playersStats, i, i + 1);
+
+				if (playersStats.get(i).ranking != Stats.Ranking.STRAIGHT &&
+						playersStats.get(i).ranking != Stats.Ranking.STRAIGHT_FLUSH &&
+						playersStats.get(i).rankingKickers.get(0).rank.value != 14) {
+					if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking) {
+						if (playersStats.get(i).rankingKickers.get(0).rank.value <
+								playersStats.get(i + 1).rankingKickers.get(0).rank.value) {
+							isSorted = false;
+							Collections.swap(playersStats, i, i + 1);
+						} else if (playersStats.get(i).rankingKickers.get(0).rank ==
+								playersStats.get(i + 1).rankingKickers.get(0).rank) {
+							if (playersStats.get(i).rankingKickers.size() == 2 &&
+									playersStats.get(i + 1).rankingKickers.size() == 2) {
+								if (playersStats.get(i).rankingKickers.get(1).rank.value <
+										playersStats.get(i + 1).rankingKickers.get(1).rank.value) {
+									isSorted = false;
+									Collections.swap(playersStats, i, i + 1);
+								}
 							}
+						}
+					}
+				}
+
+			}
+
+			for (int i = 0; i < playersStats.size() - 1; i++) {
+				if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking) {
+					//straight to Ace
+					if (playersStats.get(i).ranking == Stats.Ranking.STRAIGHT ||
+							playersStats.get(i).ranking == Stats.Ranking.STRAIGHT_FLUSH) {
+						//any straight better than straight to Ace
+						if (playersStats.get(i).rankingKickers.get(0).rank.value == 14 &&
+								playersStats.get(i + 1).rankingKickers.get(0).rank.value != 14) {
+
+							System.out.println("swap " +
+									Card.toShortString(playersStats.get(i).rankingKickers.get(0)) +
+									" " + Card.toShortString(playersStats.get(i + 1).rankingKickers.get(0)));
+
+							isSorted = false;
+							Collections.swap(playersStats, i, i + 1);
 						}
 					}
 				}
@@ -55,7 +85,7 @@ public class Calculator {
 	}
 
 	public void getStats() {
-		sortPlayers();
+		sortPlayersStats();
 
 		for (Stats playerStats : playersStats) {
 			System.out.println(playerStats.player.name + " has " +
