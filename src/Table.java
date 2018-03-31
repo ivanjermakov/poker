@@ -4,9 +4,9 @@ import java.util.Vector;
 public class Table {
 	private Vector<Card> cards = new Vector<>();
 
-	Vector<Card> deck = new Vector<>();
+	private Vector<Card> deck = new Vector<>();
 
-	Vector<Player> players = new Vector<>();
+	private Vector<Player> players = new Vector<>();
 
 	private void getCards() {
 		while (cards.size() != 52) {
@@ -65,7 +65,26 @@ public class Table {
 		this.deck = hand;
 	}
 
-	static void sortDeck(Vector<Card> deck) {
+	private Vector<Card> getHand() {
+		Vector<Card> tempCards = new Vector<>();
+
+		int i = 0;
+		while (tempCards.size() != 2) {
+			if (i >= cards.size()) {
+				return tempCards;
+			}
+
+			if (!cards.get(i).isTaken) {
+				tempCards.add(cards.get(i));
+				cards.get(i).isTaken = true;
+			}
+			++i;
+		}
+
+		return tempCards;
+	}
+
+	public static void sortDeck(Vector<Card> deck) {
 		boolean sorted = false;
 
 		while (!sorted) {
@@ -91,29 +110,18 @@ public class Table {
 
 	}
 
-	Vector<Card> getHand() {
-		Vector<Card> tempCards = new Vector<>();
-
-		int i = 0;
-		while (tempCards.size() != 2) {
-			if (i >= cards.size()) {
-				return tempCards;
-			}
-
-			if (!cards.get(i).isTaken) {
-				tempCards.add(cards.get(i));
-				cards.get(i).isTaken = true;
-			}
-			++i;
-		}
-
-		return tempCards;
-	}
-
 	public Table() {
 		getCards();
 		setDeck();
 //		sortDeck();
+	}
+
+	public Vector<Card> getDeck() {
+		return deck;
+	}
+
+	public Vector<Player> getPlayers() {
+		return players;
 	}
 
 	public Table(int playersAmount) {
@@ -137,7 +145,7 @@ public class Table {
 	public void showPlayersHands() {
 		for (int i = 0; i < players.size(); i++) {
 			System.out.print("Player " + (i + 1) + ": ");
-			players.get(i).hand();
+			players.get(i).printHand();
 			System.out.println();
 		}
 	}

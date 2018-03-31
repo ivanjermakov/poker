@@ -1,7 +1,7 @@
 import java.util.*;
 
 class Card {
-	enum Rank {
+	public enum Rank {
 		TWO(2),
 		THREE(3),
 		FOUR(4),
@@ -23,9 +23,7 @@ class Card {
 		}
 	}
 
-	Rank rank;
-
-	enum Suit {
+	public enum Suit {
 		SPADES(0),
 		HEARTS(1),
 		DIAMONDS(2),
@@ -38,18 +36,18 @@ class Card {
 		}
 	}
 
-	Suit suit;
+	public Rank rank;
+	public Suit suit;
+	public boolean isTaken = false;
 
-	boolean isTaken = false;
-
-	Card() {
+	public Card() {
 		rank = Rank.values()[new Random().nextInt(Rank.values().length)];
 		suit = Suit.values()[new Random().nextInt(Suit.values().length)];
 
 //		System.out.println("New card is " + rank + " of " + suit);
 	}
 
-	static String toShortString(Card card) {
+	public static String toShortString(Card card) {
 		String rank;
 		switch (card.rank) {
 			case TWO:
@@ -116,7 +114,7 @@ class Card {
 		return rank + suit;
 	}
 
-	static String toShortStrings(Vector<Card> cards) {
+	public static String toShortStrings(Vector<Card> cards) {
 		StringBuilder string = new StringBuilder();
 
 		for (Card card : cards) {

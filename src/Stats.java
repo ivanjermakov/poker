@@ -1,8 +1,7 @@
 import java.util.*;
 
 public class Stats {
-
-	enum Ranking {
+	public enum Ranking {
 		HIGH_CARD(0),
 		ONE_PAIR(1),
 		TWO_PAIR(2),
@@ -21,15 +20,11 @@ public class Stats {
 		}
 	}
 
-	Player player;
-
-	Vector<Card> bestHand = new Vector<>();
-
-	Ranking ranking;
-
-	Vector<Card> rankingKickers = new Vector<>();
-
-	double winningRate;
+	public Vector<Card> bestHand;
+	public Player player;
+	public Ranking ranking;
+	public Vector<Card> rankingKickers = new Vector<>();
+	public double winningRate;
 
 	private boolean isFlush(Vector<Card> deck) {
 		//check whether all suits same as first card
@@ -204,7 +199,7 @@ public class Stats {
 
 		Vector<Card> currentDeck = (Vector) deck.clone();
 
-		//first hand card
+		//first printHand card
 		for (int i = 0; i < 5; i++) {
 			currentDeck = (Vector) deck.clone();
 			currentDeck.set(i, hand.get(0));
@@ -214,7 +209,7 @@ public class Stats {
 			rankings.add(pair);
 		}
 
-		//second hand card
+		//second printHand card
 		for (int i = 0; i < 5; i++) {
 			currentDeck = (Vector) deck.clone();
 			currentDeck.set(i, hand.get(1));
@@ -224,7 +219,7 @@ public class Stats {
 			rankings.add(pair);
 		}
 
-		//both hand cards
+		//both printHand cards
 		for (int i = 0; i < 4; i++) {
 			for (int j = i + 1; j < 5; j++) {
 				//first is first

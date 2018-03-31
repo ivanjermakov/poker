@@ -5,7 +5,7 @@ public class Main {
 			Table table = new Table(8);
 
 			table.showPlayersHands();
-			table.hand();
+//			table.hand();
 		}
 	}
 }

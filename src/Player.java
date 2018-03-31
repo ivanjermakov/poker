@@ -2,11 +2,11 @@ import java.util.*;
 
 class Player {
 
-	String name;
+	public String name;
 
-	Vector<Card> cards = new Vector<>();
+	public Vector<Card> cards;
 
-	void sortHand() {
+	public void sortHand() {
 		if (cards.get(0).rank.value < cards.get(1).rank.value) {
 			Collections.swap(cards, 0, 1);
 		}
@@ -18,11 +18,11 @@ class Player {
 		}
 	}
 
-	Player(String name) {
+	public Player(String name) {
 		this.name = name;
 	}
 
-	void hand() {
+	public void printHand() {
 		for (Card card : cards) {
 			System.out.print(Card.toShortString(card) + " ");
 		}

@@ -4,7 +4,7 @@ public class Pair<F, S> {
 
 	public S second;
 
-	Pair getPair(F first, S second) {
+	public Pair getPair(F first, S second) {
 		this.first = first;
 		this.second = second;
 

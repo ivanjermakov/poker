@@ -17,30 +17,23 @@ public class Calculator {
 			}
 		}
 
-		//TODO: sort by ranking kickers. EG: pair of 2's vs pair of A's
-		//sort by kickers
+		//sort by ranking kickers
 		isSorted = false;
 		while (!isSorted) {
 			isSorted = true;
 
 			for (int i = 0; i < playersStats.size() - 1; i++) {
-				//case with same ranking kicker
-				if (!playersStats.get(i).rankingKickers.isEmpty() &&
-						playersStats.get(i).ranking.value == playersStats.get(i + 1).ranking.value &&
-						playersStats.get(i).rankingKickers.get(0).rank.value == playersStats.get(i).rankingKickers.get(0).rank.value) {
-
-					//case with 2 same ranking kickers
-					if (playersStats.get(i).rankingKickers.size() == 2 &&
-							playersStats.get(i).rankingKickers.get(1).rank.value == playersStats.get(i).rankingKickers.get(1).rank.value) {
-
-						for (int j = 0; j < 5; j++) {
-							if (playersStats.get(i).bestHand.get(j).rank.value <
-									playersStats.get(i + 1).bestHand.get(j).rank.value) {
+				if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking) {
+					if (playersStats.get(i).rankingKickers.get(0).rank.value < playersStats.get(i + 1).rankingKickers.get(0).rank.value) {
+						isSorted = false;
+						Collections.swap(playersStats, i, i + 1);
+					} else if (playersStats.get(i).rankingKickers.get(0).rank == playersStats.get(i + 1).rankingKickers.get(0).rank) {
+						if (playersStats.get(i).rankingKickers.size() == 2) {
+							if (playersStats.get(i).rankingKickers.get(1).rank.value < playersStats.get(i + 1).rankingKickers.get(1).rank.value) {
 								isSorted = false;
 								Collections.swap(playersStats, i, i + 1);
 							}
 						}
-
 					}
 				}
 			}
@@ -52,13 +45,10 @@ public class Calculator {
 	public Vector<Stats> playersStats = new Vector<>();
 
 	public Calculator(Table table) {
-		for (Player player : table.players) {
-			Stats stats = new Stats(table.deck, player);
+		for (Player player : table.getPlayers()) {
+			Stats stats = new Stats(table.getDeck(), player);
 			playersStats.add(stats);
 		}
-	}
-
-	public void getProbabilities() {
 	}
 
 	public void getWinningRates() {
