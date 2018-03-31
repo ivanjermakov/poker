@@ -1,15 +1,10 @@
 public class Main {
 
     public static void main(String[] args) {
-        Poker poker = new Poker();
+        Table table = new Table(4);
 
-		poker.addPlayer();
-		poker.addPlayer();
-		poker.addPlayer();
-		poker.addPlayer();
-
-		poker.playersHands();
-		poker.hand();
+		table.showPlayersHands();
+		table.hand();
 
     }
 }

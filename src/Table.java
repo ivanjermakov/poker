@@ -1,21 +1,17 @@
+import java.util.Collections;
 import java.util.Vector;
 
-class Poker {
+public class Table {
 	private Vector<Card> cards = new Vector<>();
 
-	private Vector<Card> hand = new Vector<>();
+	Vector<Card> deck = new Vector<>();
 
-	private Vector<Player> players = new Vector<>();
+	Vector<Player> players = new Vector<>();
 
-	private void fill() {
-		cards.setSize(52);
-
-		while (!isFilled()) {
+	private void getCards() {
+		while (cards.size() != 52) {
 			Card card = new Card();
-
-			if (!contains(card)) {
-				add(card);
-			}
+			add(card);
 		}
 
 	}
@@ -40,22 +36,23 @@ class Poker {
 		return false;
 	}
 
-	private void add(Card currentCard) {
-		for (int i = 0; i < cards.size(); i++) {
-			if (cards.get(i) == null) {
-				cards.set(i, currentCard);
+	private void add(Card card) {
+		for (Card i : cards) {
+			if (i.rank.ordinal() == card.rank.ordinal() && i.suit.ordinal() == card.suit.ordinal()) {
 				break;
 			}
 		}
+
+		cards.add(card);
 	}
 
-	private void getHand() {
+	private void setDeck() {
 		Vector<Card> hand = new Vector<>();
 
 		int i = 0;
 		while (hand.size() != 5) {
 			if (i >= cards.size()) {
-				this.hand = hand;
+				this.deck = hand;
 			}
 
 			if (!cards.get(i).isTaken) {
@@ -65,14 +62,40 @@ class Poker {
 			++i;
 		}
 
-		this.hand = hand;
+		this.deck = hand;
 	}
 
-	private Vector<Card> getCards(int amount) {
+	private void sortDeck() {
+		boolean sorted = false;
+
+		while (!sorted) {
+			sorted = true;
+
+			for (int i = 0; i < 4; i++) {
+				if (deck.get(i).rank.value < deck.get(i + 1).rank.value) {
+					sorted = false;
+					Collections.swap(deck, i, i + 1);
+				}
+			}
+
+			for (int i = 0; i < 4; i++) {
+				if (deck.get(i).rank == deck.get(i + 1).rank) {
+					if (deck.get(i).suit.value < deck.get(i + 1).suit.value) {
+						sorted = false;
+						Collections.swap(deck, i, i + 1);
+					}
+				}
+			}
+
+		}
+
+	}
+
+	Vector<Card> getHand() {
 		Vector<Card> tempCards = new Vector<>();
 
 		int i = 0;
-		while (tempCards.size() != amount) {
+		while (tempCards.size() != 2) {
 			if (i >= cards.size()) {
 				return tempCards;
 			}
@@ -87,17 +110,30 @@ class Poker {
 		return tempCards;
 	}
 
-	Poker() {
-		fill();
+	public Table() {
+		getCards();
+		setDeck();
+//		sortDeck();
 	}
 
-	void addPlayer() {
+	public Table(int playersAmount) {
+		getCards();
+		setDeck();
+		sortDeck();
+
+		for (int i = 0; i < playersAmount; i++) {
+			addPlayer();
+		}
+	}
+
+	public void addPlayer() {
 		Player player = new Player();
-		player.cards = this.getCards(2);
+		player.cards = getHand();
+		player.sortHand();
 		players.add(player);
 	}
 
-	void playersHands() {
+	public void showPlayersHands() {
 		for (int i = 0; i < players.size(); i++) {
 			System.out.print("Player " + (i + 1) + ": ");
 			players.get(i).hand();
@@ -105,17 +141,18 @@ class Poker {
 		}
 	}
 
-	void hand() {
-		getHand();
+	public void hand() {
 		System.out.print("Hand: ");
-		for (Card handCard : hand) {
+		for (Card handCard : deck) {
 			handCard.isTaken = true;
 			System.out.print(Card.toShortString(handCard) + " ");
 		}
 		System.out.println();
+
+		Spy spy = new Spy(this);
 	}
 
-	void flop() {
+	public void flop() {
 		System.out.print("Flop: ");
 		for (int i = 0; i < 3; i++) {
 			System.out.print(Card.toShortString(cards.get(i)) + " ");
@@ -123,12 +160,12 @@ class Poker {
 		System.out.println();
 	}
 
-	void turn() {
+	public void turn() {
 		System.out.print("Turn: " + Card.toShortString(cards.get(3)) + " ");
 		System.out.println();
 	}
 
-	void river() {
+	public void river() {
 		System.out.print("River: " + Card.toShortString(cards.get(4)) + " ");
 		System.out.println();
 	}
