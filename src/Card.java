@@ -17,6 +17,7 @@ class Card {
 		ACE(14);
 
 		public int value;
+
 		Rank(int value) {
 			this.value = value;
 		}
@@ -31,6 +32,7 @@ class Card {
 		CLUBS(3);
 
 		public int value;
+
 		Suit(int value) {
 			this.value = value;
 		}
@@ -113,4 +115,14 @@ class Card {
 
 		return rank + suit;
 	}
+
+	static String toShortStrings(Vector<Card> cards) {
+		String string = "";
+
+		for (Card card : cards) {
+			string += Card.toShortString(card) + " ";
+		}
+		return string;
+	}
+
 }

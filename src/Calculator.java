@@ -19,7 +19,7 @@ public class Calculator {
 
 	void getRankings() {
 		for (Stats playerStats : playersStats) {
-			System.out.println(playerStats.player.name + " has " + playerStats.ranking);
+			System.out.println(playerStats.player.name + " has " + playerStats.ranking + " with " + Card.toShortStrings(playerStats.bestHand));
 		}
 	}
 }

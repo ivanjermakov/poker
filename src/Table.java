@@ -143,7 +143,7 @@ public class Table {
 	}
 
 	public void hand() {
-		System.out.print("Hand: ");
+		System.out.print("Table cards: ");
 		for (Card handCard : deck) {
 			handCard.isTaken = true;
 			System.out.print(Card.toShortString(handCard) + " ");

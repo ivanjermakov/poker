@@ -41,13 +41,14 @@ public class Stats {
 		return true;
 	}
 
-	//TODO: fix D: J 9 8 8 7 H: 6 5
 	private boolean isStraight(Vector<Card> deck) {
 		int rank = deck.get(0).rank.value;
 		for (int i = 0; i < 5; i++) {
 			//Ace as 1
-			if (i == 4 && deck.get(i - 1).rank.value == 2 && deck.get(i + 1).rank.value == 14) {
-				return true;
+			if (i == 4) {
+				if (deck.get(i - 1).rank.value == 2 && deck.get(i).rank.value == 14) {
+					return true;
+				}
 			}
 			if (deck.get(i).rank.value != rank) {
 				return false;
@@ -129,24 +130,36 @@ public class Stats {
 		return Ranking.HIGH_CARD;
 	}
 
-	private Pair<Ranking, Vector<Card>> getBestKicker(Vector<Pair<Ranking, Vector<Card>>> hand) {
+	private boolean areSimilar(Vector<Pair<Ranking, Vector<Card>>> deck) {
+		if (deck.size() <= 1) return true;
 
-		while (hand.size() != 1) {
-			for (int i = 0; i < hand.size() - 1; i++) {
-				for (int j = 0; j < hand.size(); j++) {
-					if (hand.get(i).second.get(j).rank.value < hand.get(i + 1).second.get(j).rank.value) {
-						hand.remove(i);
+		for (int i = 1; i < deck.size(); i++) {
+			if (deck.get(0) != deck.get(i)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private Pair<Ranking, Vector<Card>> getBestKicker(Vector<Pair<Ranking, Vector<Card>>> deck) {
+
+		while (!areSimilar(deck)) {
+			for (int i = 0; i < deck.size() - 1; i++) {
+				for (int j = 0; j < deck.size(); j++) {
+					if (deck.get(i).second.get(j).rank.value < deck.get(i + 1).second.get(j).rank.value) {
+						deck.remove(i);
 						break;
 					}
-					if (hand.get(i).second.get(j).rank.value > hand.get(i).second.get(j + 1).rank.value) {
-						hand.remove(i + 1);
+					if (deck.get(i).second.get(j).rank.value > deck.get(i).second.get(j + 1).rank.value) {
+						deck.remove(i + 1);
 						break;
 					}
 				}
 			}
 		}
 
-		return hand.get(0);
+		return deck.get(0);
 	}
 
 	private Pair<Ranking, Vector<Card>> getBestHand(Vector<Pair<Ranking, Vector<Card>>> rankings) {
@@ -231,8 +244,10 @@ public class Stats {
 			}
 		}
 
-		ranking = getBestHand(rankings).first;
-		bestHand = getBestHand(rankings).second;
+		Pair<Ranking, Vector<Card>> bestHand = getBestHand(rankings);
+		this.ranking = bestHand.first;
+		this.bestHand = bestHand.second;
+
 	}
 
 	public Stats(Vector<Card> deck, Player player) {
