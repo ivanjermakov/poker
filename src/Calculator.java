@@ -7,7 +7,7 @@ public class Calculator {
 	public Calculator(Table table) {
 		for (Player player : table.players) {
 			Stats stats = new Stats(table.deck, player);
-			playersStats.add(stats.getStats());
+			playersStats.add(stats);
 		}
 	}
 
@@ -15,5 +15,11 @@ public class Calculator {
 	}
 
 	void getWinningRates() {
+	}
+
+	void getRankings() {
+		for (Stats playerStats : playersStats) {
+			System.out.println(playerStats.player.name + " has " + playerStats.ranking);
+		}
 	}
 }

@@ -38,8 +38,8 @@ public class Table {
 
 	private void add(Card card) {
 		for (Card i : cards) {
-			if (i.rank.ordinal() == card.rank.ordinal() && i.suit.ordinal() == card.suit.ordinal()) {
-				break;
+			if (i.rank.value == card.rank.value && i.suit.value == card.suit.value) {
+				return;
 			}
 		}
 
@@ -65,7 +65,7 @@ public class Table {
 		this.deck = hand;
 	}
 
-	private void sortDeck() {
+	static void sortDeck(Vector<Card> deck) {
 		boolean sorted = false;
 
 		while (!sorted) {
@@ -117,17 +117,18 @@ public class Table {
 	}
 
 	public Table(int playersAmount) {
+		if (playersAmount > 23) return;
 		getCards();
 		setDeck();
-		sortDeck();
+		sortDeck(deck);
 
 		for (int i = 0; i < playersAmount; i++) {
-			addPlayer();
+			addPlayer("Player " + Integer.toString(i + 1));
 		}
 	}
 
-	public void addPlayer() {
-		Player player = new Player();
+	public void addPlayer(String name) {
+		Player player = new Player(name);
 		player.cards = getHand();
 		player.sortHand();
 		players.add(player);

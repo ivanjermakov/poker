@@ -1,6 +1,9 @@
 import java.util.*;
 
 class Player {
+
+	String name;
+
 	Vector<Card> cards = new Vector<>();
 
 	void sortHand() {
@@ -15,7 +18,8 @@ class Player {
 		}
 	}
 
-	Player() {
+	Player(String name) {
+		this.name = name;
 	}
 
 	void hand() {
