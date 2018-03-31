@@ -23,9 +23,11 @@ public class Stats {
 
 	Player player;
 
-	Vector<Card> bestHand;
+	Vector<Card> bestHand = new Vector<>();
 
 	Ranking ranking;
+
+	Vector<Card> rankingKickers = new Vector<>();
 
 	double winningRate;
 
@@ -87,7 +89,7 @@ public class Stats {
 				(deck.get(3).rank == deck.get(4).rank);
 	}
 
-	private Ranking getRanking(Vector<Card> deck) {
+	private Ranking setRanking(Vector<Card> deck) {
 		//sort
 		Table.sortDeck(deck);
 		//STRAIGHT, FLUSH, STRAIGHT_FLUSH
@@ -191,12 +193,12 @@ public class Stats {
 		return getBestKicker(withBestRanking);
 	}
 
-	private void getRanking(final Vector<Card> deck, Vector<Card> hand) {
+	private void setRanking(final Vector<Card> deck, Vector<Card> hand) {
 		Vector<Pair<Ranking, Vector<Card>>> rankings = new Vector<>();
 
 		//table cards only
 		Pair pair = new Pair();
-		pair.first = getRanking(deck);
+		pair.first = setRanking(deck);
 		pair.second = deck;
 		rankings.add(pair);
 
@@ -207,7 +209,7 @@ public class Stats {
 			currentDeck = (Vector) deck.clone();
 			currentDeck.set(i, hand.get(0));
 			pair = new Pair();
-			pair.first = getRanking(currentDeck);
+			pair.first = setRanking(currentDeck);
 			pair.second = currentDeck;
 			rankings.add(pair);
 		}
@@ -217,7 +219,7 @@ public class Stats {
 			currentDeck = (Vector) deck.clone();
 			currentDeck.set(i, hand.get(1));
 			pair = new Pair();
-			pair.first = getRanking(currentDeck);
+			pair.first = setRanking(currentDeck);
 			pair.second = currentDeck;
 			rankings.add(pair);
 		}
@@ -230,7 +232,7 @@ public class Stats {
 				currentDeck.set(i, hand.get(0));
 				currentDeck.set(j, hand.get(1));
 				pair = new Pair();
-				pair.first = getRanking(currentDeck);
+				pair.first = setRanking(currentDeck);
 				pair.second = currentDeck;
 				rankings.add(pair);
 				//second is first
@@ -238,7 +240,7 @@ public class Stats {
 				currentDeck.set(i, hand.get(1));
 				currentDeck.set(j, hand.get(0));
 				pair = new Pair();
-				pair.first = getRanking(currentDeck);
+				pair.first = setRanking(currentDeck);
 				pair.second = currentDeck;
 				rankings.add(pair);
 			}
@@ -250,9 +252,44 @@ public class Stats {
 
 	}
 
+	private void setRankingKicker() {
+		switch (ranking) {
+			case STRAIGHT_FLUSH:
+			case STRAIGHT:
+				rankingKickers.add(bestHand.get(4));
+				break;
+			case FOUR_OF_A_KIND:
+				rankingKickers.add(bestHand.get(1));
+				break;
+			case FULL_HOUSE:
+				rankingKickers.add(bestHand.get(0));
+				rankingKickers.add(bestHand.get(4));
+				break;
+			case THREE_OF_A_KIND:
+				rankingKickers.add(bestHand.get(2));
+				break;
+			case TWO_PAIR:
+				rankingKickers.add(bestHand.get(1));
+				rankingKickers.add(bestHand.get(4));
+				break;
+			case ONE_PAIR:
+				for (int i = 0; i < 4; i++) {
+					if (bestHand.get(i).rank.value == bestHand.get(i + 1).rank.value) {
+						rankingKickers.add(bestHand.get(i));
+						break;
+					}
+				}
+				break;
+			default:
+				rankingKickers.add(bestHand.get(0));
+		}
+	}
+
 	public Stats(Vector<Card> deck, Player player) {
 		this.player = player;
-		getRanking(deck, player.cards);
+		setRanking(deck, player.cards);
+
+		setRankingKicker();
 	}
 
 }

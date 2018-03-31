@@ -117,12 +117,12 @@ class Card {
 	}
 
 	static String toShortStrings(Vector<Card> cards) {
-		String string = "";
+		StringBuilder string = new StringBuilder();
 
 		for (Card card : cards) {
-			string += Card.toShortString(card) + " ";
+			string.append(Card.toShortString(card)).append(" ");
 		}
-		return string;
+		return string.toString();
 	}
 
 }
