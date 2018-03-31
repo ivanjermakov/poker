@@ -52,7 +52,10 @@ class Poker {
 	void hand() {
 		System.out.print("Hand: ");
 		for (int i = 0; i < 5; i++) {
-			System.out.print(Card.toShortString(cards.get(i)) + " ");
+			if (!cards.get(i).isTaken) {
+				System.out.print(Card.toShortString(cards.get(i)) + " ");
+				cards.get(i).isTaken = true;
+			}
 		}
 		System.out.println();
 	}

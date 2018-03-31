@@ -28,6 +28,8 @@ class Card {
 
 	private Suit suit;
 
+	boolean isTaken = false;
+
 	Card() {
 		rank = Rank.values()[new Random().nextInt(Rank.values().length)];
 		suit = Suit.values()[new Random().nextInt(Suit.values().length)];
@@ -36,7 +38,6 @@ class Card {
 	}
 
 	static String toShortString(Card card) {
-
 		String rank;
 		switch (card.rank) {
 			case TWO:

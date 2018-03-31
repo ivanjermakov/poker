@@ -4,8 +4,5 @@ public class Main {
         Poker poker = new Poker();
 
         poker.hand();
-        poker.flop();
-        poker.turn();
-        poker.river();
     }
 }
