@@ -47,7 +47,7 @@ class Card {
 //		System.out.println("New card is " + rank + " of " + suit);
 	}
 
-	public static String toShortString(Card card) {
+	public static String toShortString(Card card, boolean colored) {
 		String rank;
 		switch (card.rank) {
 			case TWO:
@@ -99,13 +99,21 @@ class Card {
 				suit = "♣";
 				break;
 			case HEARTS:
-				suit = "\u001B[31m" + "♥" + "\u001B[0m";
+				if (colored) {
+					suit = "\u001B[31m" + "♥" + "\u001B[0m";
+				} else {
+					suit = "♥";
+				}
 				break;
 			case SPADES:
 				suit = "♠";
 				break;
 			case DIAMONDS:
-				suit = "\u001B[31m" + "♦" + "\u001B[0m";
+				if (colored) {
+					suit = "\u001B[31m" + "♦" + "\u001B[0m";
+				} else {
+					suit = "♦";
+				}
 				break;
 			default:
 				suit = "und";
@@ -114,11 +122,11 @@ class Card {
 		return rank + suit;
 	}
 
-	public static String toShortStrings(Vector<Card> cards) {
+	public static String toShortStrings(Vector<Card> cards, boolean colored) {
 		StringBuilder string = new StringBuilder();
 
 		for (Card card : cards) {
-			string.append(Card.toShortString(card)).append(" ");
+			string.append(Card.toShortString(card, colored)).append(" ");
 		}
 		return string.toString();
 	}

@@ -154,7 +154,7 @@ public class Table {
 		System.out.print("Table cards: ");
 		for (Card handCard : deck) {
 			handCard.isTaken = true;
-			System.out.print(Card.toShortString(handCard) + " ");
+			System.out.print(Card.toShortString(handCard, true) + " ");
 		}
 		System.out.println();
 
@@ -164,18 +164,18 @@ public class Table {
 	public void flop() {
 		System.out.print("Flop: ");
 		for (int i = 0; i < 3; i++) {
-			System.out.print(Card.toShortString(cards.get(i)) + " ");
+			System.out.print(Card.toShortString(cards.get(i), true) + " ");
 		}
 		System.out.println();
 	}
 
 	public void turn() {
-		System.out.print("Turn: " + Card.toShortString(cards.get(3)) + " ");
+		System.out.print("Turn: " + Card.toShortString(cards.get(3), true) + " ");
 		System.out.println();
 	}
 
 	public void river() {
-		System.out.print("River: " + Card.toShortString(cards.get(4)) + " ");
+		System.out.print("River: " + Card.toShortString(cards.get(4), true) + " ");
 		System.out.println();
 	}
 }

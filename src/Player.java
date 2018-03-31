@@ -24,7 +24,7 @@ class Player {
 
 	public void printHand() {
 		for (Card card : cards) {
-			System.out.print(Card.toShortString(card) + " ");
+			System.out.print(Card.toShortString(card, true) + " ");
 		}
 	}
 }
