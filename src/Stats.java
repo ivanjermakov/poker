@@ -129,7 +129,7 @@ public class Stats {
 		return Ranking.HIGH_CARD;
 	}
 
-	private boolean areSimilar(ArrayList<Pair<Ranking, ArrayList<Card>>> deck) {
+	private boolean areSimilar(ArrayList<Stats> deck) {
 		if (deck.size() <= 1) return true;
 
 		for (int i = 1; i < deck.size(); i++) {
@@ -141,16 +141,16 @@ public class Stats {
 		return false;
 	}
 
-	private Pair<Ranking, ArrayList<Card>> getBestKicker(ArrayList<Pair<Ranking, ArrayList<Card>>> deck) {
+	private Stats getBestKicker(ArrayList<Stats> deck) {
 
 		while (!areSimilar(deck)) {
 			for (int i = 0; i < deck.size() - 1; i++) {
 				for (int j = 0; j < deck.size(); j++) {
-					if (deck.get(i).second.get(j).rank.value < deck.get(i + 1).second.get(j).rank.value) {
+					if (deck.get(i).bestHand.get(j).rank.value < deck.get(i + 1).bestHand.get(j).rank.value) {
 						deck.remove(i);
 						break;
 					}
-					if (deck.get(i).second.get(j).rank.value > deck.get(i).second.get(j + 1).rank.value) {
+					if (deck.get(i).bestHand.get(j).rank.value > deck.get(i).bestHand.get(j + 1).rank.value) {
 						deck.remove(i + 1);
 						break;
 					}
@@ -161,7 +161,7 @@ public class Stats {
 		return deck.get(0);
 	}
 
-	private Pair<Ranking, ArrayList<Card>> getBestHand(ArrayList<Pair<Ranking, ArrayList<Card>>> rankings) {
+	private Stats getBestHand(ArrayList<Stats> rankings) {
 		//get pairs with best ranking
 		//sort by rankings
 		boolean sorted = false;
@@ -170,7 +170,7 @@ public class Stats {
 			sorted = true;
 
 			for (int i = 0; i < rankings.size() - 1; i++) {
-				if (rankings.get(i).first.value < rankings.get(i + 1).first.value) {
+				if (rankings.get(i).ranking.value < rankings.get(i + 1).ranking.value) {
 					sorted = false;
 					Collections.swap(rankings, i, i + 1);
 				}
@@ -179,10 +179,10 @@ public class Stats {
 		}
 
 		//get with best ranking
-		ArrayList<Pair<Ranking, ArrayList<Card>>> withBestRanking = new ArrayList<>();
+		ArrayList<Stats> withBestRanking = new ArrayList<>();
 
 		int i = 0;
-		while (i < rankings.size() && rankings.get(0).first.value == rankings.get(i).first.value) {
+		while (i < rankings.size() && rankings.get(0).ranking.value == rankings.get(i).ranking.value) {
 			withBestRanking.add(rankings.get(i));
 			i++;
 		}
@@ -191,13 +191,13 @@ public class Stats {
 	}
 
 	private void setRanking(final ArrayList<Card> deck, ArrayList<Card> hand) {
-		ArrayList<Pair<Ranking, ArrayList<Card>>> rankings = new ArrayList<>();
+		ArrayList<Stats> rankings = new ArrayList<>();
 
 		//table hand only
-		Pair pair = new Pair();
-		pair.first = setRanking(deck);
-		pair.second = deck;
-		rankings.add(pair);
+		Stats ranking = new Stats();
+		ranking.ranking = setRanking(deck);
+		ranking.bestHand = deck;
+		rankings.add(ranking);
 
 		ArrayList<Card> currentDeck = (ArrayList) deck.clone();
 
@@ -205,20 +205,20 @@ public class Stats {
 		for (int i = 0; i < 5; i++) {
 			currentDeck = (ArrayList) deck.clone();
 			currentDeck.set(i, hand.get(0));
-			pair = new Pair();
-			pair.first = setRanking(currentDeck);
-			pair.second = currentDeck;
-			rankings.add(pair);
+			ranking = new Stats();
+			ranking.ranking = setRanking(currentDeck);
+			ranking.bestHand = currentDeck;
+			rankings.add(ranking);
 		}
 
 		//second printHand card
 		for (int i = 0; i < 5; i++) {
 			currentDeck = (ArrayList) deck.clone();
 			currentDeck.set(i, hand.get(1));
-			pair = new Pair();
-			pair.first = setRanking(currentDeck);
-			pair.second = currentDeck;
-			rankings.add(pair);
+			ranking = new Stats();
+			ranking.ranking = setRanking(currentDeck);
+			ranking.bestHand = currentDeck;
+			rankings.add(ranking);
 		}
 
 		//both printHand hand
@@ -228,24 +228,24 @@ public class Stats {
 				currentDeck = (ArrayList) deck.clone();
 				currentDeck.set(i, hand.get(0));
 				currentDeck.set(j, hand.get(1));
-				pair = new Pair();
-				pair.first = setRanking(currentDeck);
-				pair.second = currentDeck;
-				rankings.add(pair);
+				ranking = new Stats();
+				ranking.ranking = setRanking(currentDeck);
+				ranking.bestHand = currentDeck;
+				rankings.add(ranking);
 				//second is first
 				currentDeck = (ArrayList) deck.clone();
 				currentDeck.set(i, hand.get(1));
 				currentDeck.set(j, hand.get(0));
-				pair = new Pair();
-				pair.first = setRanking(currentDeck);
-				pair.second = currentDeck;
-				rankings.add(pair);
+				ranking = new Stats();
+				ranking.ranking = setRanking(currentDeck);
+				ranking.bestHand = currentDeck;
+				rankings.add(ranking);
 			}
 		}
 
-		Pair<Ranking, ArrayList<Card>> bestHand = getBestHand(rankings);
-		this.ranking = bestHand.first;
-		this.bestHand = bestHand.second;
+		Stats bestHand = getBestHand(rankings);
+		this.ranking = bestHand.ranking;
+		this.bestHand = bestHand.bestHand;
 
 	}
 
@@ -292,6 +292,8 @@ public class Stats {
 				rankingKickers.add(bestHand.get(0));
 		}
 	}
+	
+	public Stats() {}
 
 	public Stats(ArrayList<Card> deck, Player player) {
 		this.player = player;
