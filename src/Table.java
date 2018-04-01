@@ -1,15 +1,16 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.ArrayList;
 
 public class Table {
 	private ArrayList<Card> cards = new ArrayList<>();
 
 	private ArrayList<Card> deck = new ArrayList<>();
 
+	private int playersAmount;
+
 	private ArrayList<Player> players = new ArrayList<>();
 
-	private void getCards() {
+	private void setCards() {
 		while (cards.size() != 52) {
 			Card card = new Card();
 			add(card);
@@ -48,22 +49,76 @@ public class Table {
 	}
 
 	private void setDeck() {
-		ArrayList<Card> hand = new ArrayList<>();
+		ArrayList<Card> deck = new ArrayList<>();
 
 		int i = 0;
-		while (hand.size() != 5) {
+		while (deck.size() != 5) {
 			if (i >= cards.size()) {
-				this.deck = hand;
+				this.deck = deck;
 			}
 
 			if (!cards.get(i).isTaken) {
 				cards.get(i).isTaken = true;
-				hand.add(cards.get(i));
+				deck.add(cards.get(i));
 			}
 			++i;
 		}
 
-		this.deck = hand;
+		this.deck = deck;
+	}
+
+	private void setFlop() {
+		if (!deck.isEmpty()) return;
+		ArrayList<Card> flop = new ArrayList<>();
+
+		int i = 0;
+		while (flop.size() != 3) {
+			if (i >= cards.size()) {
+				this.deck = flop;
+			}
+
+			if (!cards.get(i).isTaken) {
+				cards.get(i).isTaken = true;
+				flop.add(cards.get(i));
+			}
+			++i;
+		}
+
+		this.deck = flop;
+	}
+
+	private void setTurn() {
+		if (deck.size() != 3) return;
+		Card card = null;
+
+		int i = 0;
+		while (i <= cards.size()) {
+			if (!cards.get(i).isTaken) {
+				cards.get(i).isTaken = true;
+				card = cards.get(i);
+				break;
+			}
+			++i;
+		}
+
+		this.deck.add(card);
+	}
+
+	private void setRiver() {
+		if (deck.size() != 4) return;
+		Card card = null;
+
+		int i = 0;
+		while (i <= cards.size()) {
+			if (!cards.get(i).isTaken) {
+				cards.get(i).isTaken = true;
+				card = cards.get(i);
+				break;
+			}
+			++i;
+		}
+
+		this.deck.add(card);
 	}
 
 	private ArrayList<Card> getHand() {
@@ -94,24 +149,24 @@ public class Table {
 
 	public State state = State.NONE;
 
-	public static void sortDeck(ArrayList<Card> deck) {
+	public static void sortCards(ArrayList<Card> cards) {
 		boolean sorted = false;
 
 		while (!sorted) {
 			sorted = true;
 
-			for (int i = 0; i < 4; i++) {
-				if (deck.get(i).rank.value < deck.get(i + 1).rank.value) {
+			for (int i = 0; i < cards.size() - 1; i++) {
+				if (cards.get(i).rank.value < cards.get(i + 1).rank.value) {
 					sorted = false;
-					Collections.swap(deck, i, i + 1);
+					Collections.swap(cards, i, i + 1);
 				}
 			}
 
-			for (int i = 0; i < 4; i++) {
-				if (deck.get(i).rank == deck.get(i + 1).rank) {
-					if (deck.get(i).suit.value < deck.get(i + 1).suit.value) {
+			for (int i = 0; i < cards.size() - 1; i++) {
+				if (cards.get(i).rank == cards.get(i + 1).rank) {
+					if (cards.get(i).suit.value < cards.get(i + 1).suit.value) {
 						sorted = false;
-						Collections.swap(deck, i, i + 1);
+						Collections.swap(cards, i, i + 1);
 					}
 				}
 			}
@@ -121,9 +176,9 @@ public class Table {
 	}
 
 	public Table() {
-		getCards();
+		setCards();
 		setDeck();
-//		sortDeck();
+//		sortCards();
 	}
 
 	public ArrayList<Card> getDeck() {
@@ -136,9 +191,13 @@ public class Table {
 
 	public Table(int playersAmount) {
 		if (playersAmount > 23) return;
-		getCards();
-		setDeck();
-		sortDeck(deck);
+		this.playersAmount = playersAmount;
+
+
+	}
+
+	public void newHand() {
+		setCards();
 
 		for (int i = 0; i < playersAmount; i++) {
 			addPlayer("Player " + Integer.toString(i + 1));
@@ -162,6 +221,9 @@ public class Table {
 	}
 
 	public void showTableCards() {
+		setDeck();
+		sortCards(deck);
+
 		state = State.RIVER;
 		System.out.print("Table cards: ");
 		for (Card handCard : deck) {
@@ -174,6 +236,8 @@ public class Table {
 	}
 
 	public void showFlop() {
+		setFlop();
+		sortCards(deck);
 		if (players.isEmpty()) return;
 		state = State.FLOP;
 		System.out.print("Flop: ");
@@ -186,6 +250,8 @@ public class Table {
 	}
 
 	public void showTurn() {
+		setTurn();
+		sortCards(deck);
 		if (players.isEmpty()) return;
 		state = State.TURN;
 		System.out.print("Turn: " + Card.toShortString(cards.get(3), true) + " ");
@@ -196,6 +262,8 @@ public class Table {
 	}
 
 	public void showRiver() {
+		setRiver();
+		sortCards(deck);
 		if (players.isEmpty()) return;
 		state = State.RIVER;
 		System.out.print("River: " + Card.toShortString(cards.get(4), true) + " ");

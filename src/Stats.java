@@ -88,7 +88,7 @@ public class Stats {
 
 	private Ranking setRanking(ArrayList<Card> deck) {
 		//sort
-		Table.sortDeck(deck);
+		Table.sortCards(deck);
 		//STRAIGHT, FLUSH, STRAIGHT_FLUSH
 		if (isFlush(deck) && isStraight(deck)) {
 			//ROYAL_FLUSH
