@@ -3,10 +3,10 @@ public class Main {
 	public static void main(String[] args) {
 		for (int i = 0; i < 1; i++) {
 			Table table = new Table(8);
-			table.newHand();
+			table.newGame();
 
 			table.showPlayersHands();
-//			table.showTableCards();
+//			table.showCommonCards();
 			table.showFlop();
 			table.showTurn();
 			table.showRiver();

@@ -137,7 +137,7 @@ class Card {
 		return rank + suit;
 	}
 
-	public static String toShortStrings(ArrayList<Card> cards, boolean colored) {
+	public static String toShortStrings(List<Card> cards, boolean colored) {
 		StringBuilder string = new StringBuilder();
 
 		for (Card card : cards) {

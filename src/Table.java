@@ -1,31 +1,19 @@
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 public class Table {
-	private ArrayList<Card> cardDeck = new ArrayList<>();
-
-	private ArrayList<Card> commonCards = new ArrayList<>();
-
+	public List<Card> cardDeck = new ArrayList<>();
+	public List<Card> commonCards = new ArrayList<>();
+	public List<Player> players = new ArrayList<>();
 	private int playersAmount;
 
-	private ArrayList<Player> players = new ArrayList<>();
-
-	private void setCards() {
-		while (cardDeck.size() != 52) {
-			Card card = new Card();
-			add(card);
-		}
-
-	}
-
-	private boolean isFilled() {
+	private void add(Card currentCard) {
 		for (Card card : cardDeck) {
-			if (card == null) {
-				return false;
+			if (card.rank.value == currentCard.rank.value &&
+					card.suit.value == currentCard.suit.value) {
+				return;
 			}
 		}
-
-		return true;
+		cardDeck.add(currentCard);
 	}
 
 	private boolean contains(Card currentCard) {
@@ -34,49 +22,43 @@ public class Table {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
-	private void add(Card card) {
-		for (Card i : cardDeck) {
-			if (i.rank.value == card.rank.value && i.suit.value == card.suit.value) {
-				return;
-			}
+	private void setCardDeck() {
+		while (cardDeck.size() != 52) {
+			Card card = new Card();
+			add(card);
 		}
-
-		cardDeck.add(card);
 	}
 
-	private void setDeck() {
-		ArrayList<Card> deck = new ArrayList<>();
+	private void setCommonCards() {
+		List<Card> newCommonCards = new ArrayList<>();
 
 		int i = 0;
-		while (deck.size() != 5) {
+		while (newCommonCards.size() != 5) {
 			if (i >= cardDeck.size()) {
-				this.commonCards = deck;
+				commonCards = newCommonCards;
 			}
-
 			if (!cardDeck.get(i).isTaken) {
 				cardDeck.get(i).isTaken = true;
-				deck.add(cardDeck.get(i));
+				newCommonCards.add(cardDeck.get(i));
 			}
 			++i;
 		}
 
-		this.commonCards = deck;
+		this.commonCards = newCommonCards;
 	}
 
 	private void setFlop() {
 		if (!commonCards.isEmpty()) return;
-		ArrayList<Card> flop = new ArrayList<>();
+		List<Card> flop = new ArrayList<>();
 
 		int i = 0;
 		while (flop.size() != 3) {
 			if (i >= cardDeck.size()) {
-				this.commonCards = flop;
+				commonCards = flop;
 			}
-
 			if (!cardDeck.get(i).isTaken) {
 				cardDeck.get(i).isTaken = true;
 				flop.add(cardDeck.get(i));
@@ -84,7 +66,7 @@ public class Table {
 			++i;
 		}
 
-		this.commonCards = flop;
+		commonCards = flop;
 	}
 
 	private void setTurn() {
@@ -101,7 +83,7 @@ public class Table {
 			++i;
 		}
 
-		this.commonCards.add(card);
+		commonCards.add(card);
 	}
 
 	private void setRiver() {
@@ -118,46 +100,45 @@ public class Table {
 			++i;
 		}
 
-		this.commonCards.add(card);
+		commonCards.add(card);
 	}
 
-	private ArrayList<Card> getHand() {
-		ArrayList<Card> tempCards = new ArrayList<>();
+	private List<Card> getHand() {
+		List<Card> hand = new ArrayList<>();
 
 		int i = 0;
-		while (tempCards.size() != 2) {
+		while (hand.size() != 2) {
 			if (i >= cardDeck.size()) {
-				return tempCards;
+				return hand;
 			}
-
 			if (!cardDeck.get(i).isTaken) {
-				tempCards.add(cardDeck.get(i));
+				hand.add(cardDeck.get(i));
 				cardDeck.get(i).isTaken = true;
 			}
 			++i;
 		}
 
-		return tempCards;
+		return hand;
 	}
 
 	public enum State {
-		NONE,
+		PREFLOP,
 		FLOP,
 		TURN,
 		RIVER
 	}
 
-	public State state = State.NONE;
+	public State state = State.PREFLOP;
 
-	public static void sortCards(ArrayList<Card> cards) {
-		boolean sorted = false;
+	public static void sortCards(List<Card> cards) {
+		boolean isSorted = false;
 
-		while (!sorted) {
-			sorted = true;
+		while (!isSorted) {
+			isSorted = true;
 
 			for (int i = 0; i < cards.size() - 1; i++) {
 				if (cards.get(i).rank.value < cards.get(i + 1).rank.value) {
-					sorted = false;
+					isSorted = false;
 					Collections.swap(cards, i, i + 1);
 				}
 			}
@@ -165,7 +146,7 @@ public class Table {
 			for (int i = 0; i < cards.size() - 1; i++) {
 				if (cards.get(i).rank == cards.get(i + 1).rank) {
 					if (cards.get(i).suit.value < cards.get(i + 1).suit.value) {
-						sorted = false;
+						isSorted = false;
 						Collections.swap(cards, i, i + 1);
 					}
 				}
@@ -176,32 +157,17 @@ public class Table {
 	}
 
 	public Table() {
-		setCards();
-		setDeck();
-//		sortCards();
-	}
-
-	public ArrayList<Card> getCommonCards() {
-		return commonCards;
-	}
-
-	public ArrayList<Card> getCardDeck() {
-		return cardDeck;
-	}
-
-	public ArrayList<Player> getPlayers() {
-		return players;
+		setCardDeck();
+		setCommonCards();
 	}
 
 	public Table(int playersAmount) {
 		if (playersAmount > 23) return;
 		this.playersAmount = playersAmount;
-
-
 	}
 
-	public void newHand() {
-		setCards();
+	public void newGame() {
+		setCardDeck();
 
 		for (int i = 0; i < playersAmount; i++) {
 			addPlayer("Player " + Integer.toString(i + 1));
@@ -211,7 +177,7 @@ public class Table {
 	public void addPlayer(String name) {
 		Player player = new Player(name);
 		player.hand = getHand();
-		player.sortHand();
+		sortCards(player.hand);
 		players.add(player);
 	}
 
@@ -224,8 +190,8 @@ public class Table {
 		}
 	}
 
-	public void showTableCards() {
-		setDeck();
+	public void showCommonCards() {
+		setCommonCards();
 		sortCards(commonCards);
 
 		state = State.RIVER;

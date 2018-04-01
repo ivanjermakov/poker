@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Calculator {
 
-	private ArrayList<ArrayList<Card>> possibleDecks = new ArrayList<>();
-	private Table.State state = Table.State.NONE;
+	private List<List<Card>> possibleDecks = new ArrayList<>();
+	private Table.State state = Table.State.PREFLOP;
 
 	private void sortPlayersStats() {
 		//sort by ranking
@@ -17,15 +17,18 @@ public class Calculator {
 					Collections.swap(playersStats, i, i + 1);
 				}
 			}
+
 		}
 
-//		sort by ranking kickers
+		//sort by ranking kickers
 		isSorted = false;
 		while (!isSorted) {
 			isSorted = true;
 
 			for (int i = 0; i < playersStats.size() - 1; i++) {
+
 				if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking) {
+
 					if (playersStats.get(i).rankingKickers.get(0).rank.value <
 							playersStats.get(i + 1).rankingKickers.get(0).rank.value) {
 						isSorted = false;
@@ -49,8 +52,8 @@ public class Calculator {
 
 	}
 
-	private ArrayList<Card> getContainedCards(ArrayList<Card> cards) {
-		ArrayList<Card> containedCards = new ArrayList<>();
+	private List<Card> getContainedCards(List<Card> cards) {
+		List<Card> containedCards = new ArrayList<>();
 
 		for (Card card : cards) {
 			if (!card.isTaken) {
@@ -63,7 +66,6 @@ public class Calculator {
 	}
 
 	private void setPossibleFlopDecks(ArrayList<Card> flop, ArrayList<Card> cards) {
-
 		for (int i = 0; i < cards.size() - 1; i++) {
 			for (int j = i + 1; j < cards.size(); j++) {
 				ArrayList<Card> possibleDeck = (ArrayList) flop.clone();
@@ -89,7 +91,7 @@ public class Calculator {
 	private void calculateTurnRates() {
 		System.out.println("Calculating turn rates...");
 
-		for (ArrayList<Card> possibleDeck : possibleDecks) {
+		for (List<Card> possibleDeck : possibleDecks) {
 
 		}
 	}
@@ -100,7 +102,7 @@ public class Calculator {
 		Stats winningStats = playersStats.get(0);
 
 		//all the winners would divide rate
-		ArrayList<Stats> winnersStats = new ArrayList<>();
+		List<Stats> winnersStats = new ArrayList<>();
 		for (Stats playerStats : playersStats) {
 			if (playerStats.ranking == winningStats.ranking &&
 					isSameKickersRank(playerStats.rankingKickers, winningStats.rankingKickers)) {
@@ -123,7 +125,7 @@ public class Calculator {
 		}
 	}
 
-	private static boolean isSameKickersRank(ArrayList<Card> hand1, ArrayList<Card> hand2) {
+	private static boolean isSameKickersRank(List<Card> hand1, List<Card> hand2) {
 		if (hand1.isEmpty() && hand2.isEmpty()) return true;
 		if (hand1.size() == hand2.size()) {
 			for (int i = 0; i < hand1.size(); i++) {
@@ -135,22 +137,22 @@ public class Calculator {
 		return true;
 	}
 
-	public ArrayList<Stats> playersStats = new ArrayList<>();
+	public List<Stats> playersStats = new ArrayList<>();
 
 	public Calculator(Table table) {
 		state = table.state;
 		switch (state) {
 			case RIVER:
-				for (Player player : table.getPlayers()) {
-					Stats stats = new Stats(table.getCommonCards(), player);
+				for (Player player : table.players) {
+					Stats stats = new Stats(table.commonCards, player);
 					playersStats.add(stats);
 				}
 				break;
 			case TURN:
-				setPossibleTurnDecks(table.getCommonCards(), getContainedCards(table.getCardDeck()));
+				setPossibleTurnDecks((ArrayList)table.commonCards, (ArrayList)getContainedCards(table.cardDeck));
 				break;
 			case FLOP:
-				setPossibleFlopDecks(table.getCommonCards(), getContainedCards(table.getCardDeck()));
+				setPossibleFlopDecks((ArrayList)table.commonCards, (ArrayList)getContainedCards(table.cardDeck));
 				break;
 		}
 	}

@@ -4,7 +4,7 @@ class Player {
 
 	public String name;
 
-	public ArrayList<Card> hand;
+	public List<Card> hand;
 
 	public void sortHand() {
 		if (hand.get(0).rank.value < hand.get(1).rank.value) {
