@@ -1,7 +1,8 @@
-import java.io.*;
 import java.util.*;
 
 public class Calculator {
+
+	private Table.State state = Table.State.NONE;
 
 	private void sortPlayersStats() {
 		//sort by ranking
@@ -70,30 +71,97 @@ public class Calculator {
 
 	}
 
-	public Vector<Stats> playersStats = new Vector<>();
+	private void calculateFlopRates() {
+		System.out.println("Calculating flop rates...");
+	}
 
-	public Calculator(Table table) {
-		for (Player player : table.getPlayers()) {
-			Stats stats = new Stats(table.getDeck(), player);
-			playersStats.add(stats);
+	private void calculateTurnRates() {
+		System.out.println("Calculating turn rates...");
+
+	}
+
+	private static boolean isSameKickersRank(ArrayList<Card> hand1, ArrayList<Card> hand2) {
+		if (hand1.isEmpty() && hand2.isEmpty()) return true;
+		if (hand1.size() == hand2.size()) {
+			for (int i = 0; i < hand1.size(); i++) {
+				if (hand1.get(i).rank.value != hand2.get(i).rank.value) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private void calculateRiverRates() {
+		System.out.println("Calculating river rates...");
+		//all the winners should have hand as player at [0]
+		Stats winningStats = playersStats.get(0);
+
+		//all the winners would divide rate
+		ArrayList<Stats> winnersStats = new ArrayList<>();
+		for (Stats playerStats : playersStats) {
+			if (playerStats.ranking == winningStats.ranking &&
+					isSameKickersRank(playerStats.rankingKickers, winningStats.rankingKickers)) {
+				winnersStats.add(playerStats);
+			}
+		}
+
+		//divide rates
+		double winnersRate = Math.round(1.0 / winnersStats.size() * 100.0) / 100.0;
+		for (Stats winnerStats : winnersStats) {
+			winnerStats.winningRate = winnersRate;
+		}
+
+		//all losers rates = 0
+		for (Stats playerStats : playersStats) {
+			//he's not winner
+			if (playerStats.winningRate == -1.0) {
+				playerStats.winningRate = 0.0;
+			}
 		}
 	}
 
-	public void getWinningRates() {
+	public ArrayList<Stats> playersStats = new ArrayList<>();
+
+	public Calculator(Table table) {
+		state = table.state;
+		if (state == Table.State.RIVER) {
+			for (Player player : table.getPlayers()) {
+				Stats stats = new Stats(table.getDeck(), player);
+				playersStats.add(stats);
+			}
+		}
+	}
+
+	public void calculateWinningRates() {
+		switch (state) {
+			case FLOP:
+				calculateFlopRates();
+				break;
+			case TURN:
+				calculateTurnRates();
+				break;
+			case RIVER:
+				calculateRiverRates();
+				break;
+			default:
+		}
+	}
+
+	public void calculateStats() {
+		sortPlayersStats();
 	}
 
 	public void getStats() {
-		sortPlayersStats();
-
 //		try {
 //			PrintWriter out = new PrintWriter("output.txt", "utf-8");
 
-
-			for (Stats playerStats : playersStats) {
-				System.out.println(playerStats.player.name + " has " +
-						playerStats.ranking + " " +
-						Card.toShortStrings(playerStats.rankingKickers, true) +
-						"with " + Card.toShortStrings(playerStats.bestHand, true));
+		for (Stats playerStats : playersStats) {
+			System.out.println(playerStats.player.name + " has " +
+					playerStats.ranking + " " +
+					Card.toShortStrings(playerStats.rankingKickers, true) +
+					"with " + Card.toShortStrings(playerStats.bestHand, true) +
+			"(" + playerStats.winningRate * 100 + "%)");
 //				out.append(playerStats.player.name)
 //						.append(" has ")
 //						.append(String.valueOf(playerStats.ranking))
@@ -101,7 +169,7 @@ public class Calculator {
 //						.append(Card.toShortStrings(playerStats.rankingKickers, false))
 //						.append("with ").append(Card.toShortStrings(playerStats.bestHand, false))
 //						.append(String.valueOf('\n'));
-			}
+		}
 //			out.close();
 //		} catch (IOException e) {
 //			e.printStackTrace();

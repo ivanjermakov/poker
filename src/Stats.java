@@ -20,13 +20,13 @@ public class Stats {
 		}
 	}
 
-	public Vector<Card> bestHand;
+	public ArrayList<Card> bestHand;
 	public Player player;
 	public Ranking ranking;
-	public Vector<Card> rankingKickers = new Vector<>();
-	public double winningRate;
+	public ArrayList<Card> rankingKickers = new ArrayList<>();
+	public double winningRate = -1.0;
 
-	private boolean isFlush(Vector<Card> deck) {
+	private boolean isFlush(ArrayList<Card> deck) {
 		//check whether all suits same as first card
 		Card.Suit suit = deck.get(0).suit;
 		for (Card card : deck) {
@@ -38,7 +38,7 @@ public class Stats {
 		return true;
 	}
 
-	private boolean isStraight(Vector<Card> deck) {
+	private boolean isStraight(ArrayList<Card> deck) {
 		int rank = deck.get(0).rank.value;
 		for (int i = 0; i < 5; i++) {
 			//Ace as 1
@@ -58,35 +58,35 @@ public class Stats {
 		return true;
 	}
 
-	private boolean isFourOfAKind(Vector<Card> deck) {
+	private boolean isFourOfAKind(ArrayList<Card> deck) {
 		return deck.get(0).rank == deck.get(3).rank || deck.get(1).rank == deck.get(4).rank;
 	}
 
-	private boolean isFullHouse(Vector<Card> deck) {
+	private boolean isFullHouse(ArrayList<Card> deck) {
 		return (deck.get(0).rank == deck.get(1).rank && deck.get(2).rank == deck.get(4).rank) ||
 				(deck.get(0).rank == deck.get(2).rank && deck.get(3).rank == deck.get(4).rank);
 	}
 
-	private boolean isThreeOfAKind(Vector<Card> deck) {
+	private boolean isThreeOfAKind(ArrayList<Card> deck) {
 		return deck.get(0).rank == deck.get(2).rank ||
 				deck.get(1).rank == deck.get(3).rank ||
 				deck.get(2).rank == deck.get(4).rank;
 	}
 
-	private boolean isTwoPair(Vector<Card> deck) {
+	private boolean isTwoPair(ArrayList<Card> deck) {
 		return (deck.get(0).rank == deck.get(1).rank && deck.get(2).rank == deck.get(3).rank) ||
 				(deck.get(0).rank == deck.get(1).rank && deck.get(3).rank == deck.get(4).rank) ||
 				(deck.get(1).rank == deck.get(2).rank && deck.get(3).rank == deck.get(4).rank);
 	}
 
-	private boolean isOnePair(Vector<Card> deck) {
+	private boolean isOnePair(ArrayList<Card> deck) {
 		return (deck.get(0).rank == deck.get(1).rank) ||
 				(deck.get(1).rank == deck.get(2).rank) ||
 				(deck.get(2).rank == deck.get(3).rank) ||
 				(deck.get(3).rank == deck.get(4).rank);
 	}
 
-	private Ranking setRanking(Vector<Card> deck) {
+	private Ranking setRanking(ArrayList<Card> deck) {
 		//sort
 		Table.sortDeck(deck);
 		//STRAIGHT, FLUSH, STRAIGHT_FLUSH
@@ -129,7 +129,7 @@ public class Stats {
 		return Ranking.HIGH_CARD;
 	}
 
-	private boolean areSimilar(Vector<Pair<Ranking, Vector<Card>>> deck) {
+	private boolean areSimilar(ArrayList<Pair<Ranking, ArrayList<Card>>> deck) {
 		if (deck.size() <= 1) return true;
 
 		for (int i = 1; i < deck.size(); i++) {
@@ -141,7 +141,7 @@ public class Stats {
 		return false;
 	}
 
-	private Pair<Ranking, Vector<Card>> getBestKicker(Vector<Pair<Ranking, Vector<Card>>> deck) {
+	private Pair<Ranking, ArrayList<Card>> getBestKicker(ArrayList<Pair<Ranking, ArrayList<Card>>> deck) {
 
 		while (!areSimilar(deck)) {
 			for (int i = 0; i < deck.size() - 1; i++) {
@@ -161,7 +161,7 @@ public class Stats {
 		return deck.get(0);
 	}
 
-	private Pair<Ranking, Vector<Card>> getBestHand(Vector<Pair<Ranking, Vector<Card>>> rankings) {
+	private Pair<Ranking, ArrayList<Card>> getBestHand(ArrayList<Pair<Ranking, ArrayList<Card>>> rankings) {
 		//get pairs with best ranking
 		//sort by rankings
 		boolean sorted = false;
@@ -179,7 +179,7 @@ public class Stats {
 		}
 
 		//get with best ranking
-		Vector<Pair<Ranking, Vector<Card>>> withBestRanking = new Vector<>();
+		ArrayList<Pair<Ranking, ArrayList<Card>>> withBestRanking = new ArrayList<>();
 
 		int i = 0;
 		while (i < rankings.size() && rankings.get(0).first.value == rankings.get(i).first.value) {
@@ -190,8 +190,8 @@ public class Stats {
 		return getBestKicker(withBestRanking);
 	}
 
-	private void setRanking(final Vector<Card> deck, Vector<Card> hand) {
-		Vector<Pair<Ranking, Vector<Card>>> rankings = new Vector<>();
+	private void setRanking(final ArrayList<Card> deck, ArrayList<Card> hand) {
+		ArrayList<Pair<Ranking, ArrayList<Card>>> rankings = new ArrayList<>();
 
 		//table cards only
 		Pair pair = new Pair();
@@ -199,11 +199,11 @@ public class Stats {
 		pair.second = deck;
 		rankings.add(pair);
 
-		Vector<Card> currentDeck = (Vector) deck.clone();
+		ArrayList<Card> currentDeck = (ArrayList) deck.clone();
 
 		//first printHand card
 		for (int i = 0; i < 5; i++) {
-			currentDeck = (Vector) deck.clone();
+			currentDeck = (ArrayList) deck.clone();
 			currentDeck.set(i, hand.get(0));
 			pair = new Pair();
 			pair.first = setRanking(currentDeck);
@@ -213,7 +213,7 @@ public class Stats {
 
 		//second printHand card
 		for (int i = 0; i < 5; i++) {
-			currentDeck = (Vector) deck.clone();
+			currentDeck = (ArrayList) deck.clone();
 			currentDeck.set(i, hand.get(1));
 			pair = new Pair();
 			pair.first = setRanking(currentDeck);
@@ -225,7 +225,7 @@ public class Stats {
 		for (int i = 0; i < 4; i++) {
 			for (int j = i + 1; j < 5; j++) {
 				//first is first
-				currentDeck = (Vector) deck.clone();
+				currentDeck = (ArrayList) deck.clone();
 				currentDeck.set(i, hand.get(0));
 				currentDeck.set(j, hand.get(1));
 				pair = new Pair();
@@ -233,7 +233,7 @@ public class Stats {
 				pair.second = currentDeck;
 				rankings.add(pair);
 				//second is first
-				currentDeck = (Vector) deck.clone();
+				currentDeck = (ArrayList) deck.clone();
 				currentDeck.set(i, hand.get(1));
 				currentDeck.set(j, hand.get(0));
 				pair = new Pair();
@@ -243,7 +243,7 @@ public class Stats {
 			}
 		}
 
-		Pair<Ranking, Vector<Card>> bestHand = getBestHand(rankings);
+		Pair<Ranking, ArrayList<Card>> bestHand = getBestHand(rankings);
 		this.ranking = bestHand.first;
 		this.bestHand = bestHand.second;
 
@@ -265,8 +265,12 @@ public class Stats {
 				rankingKickers.add(bestHand.get(1));
 				break;
 			case FULL_HOUSE:
-				rankingKickers.add(bestHand.get(0));
-				rankingKickers.add(bestHand.get(4));
+				rankingKickers.add(bestHand.get(2));
+				if (bestHand.get(0).rank == bestHand.get(2).rank) {
+					rankingKickers.add(bestHand.get(4));
+				} else {
+					rankingKickers.add(bestHand.get(0));
+				}
 				break;
 			case THREE_OF_A_KIND:
 				rankingKickers.add(bestHand.get(2));
@@ -288,7 +292,7 @@ public class Stats {
 		}
 	}
 
-	public Stats(Vector<Card> deck, Player player) {
+	public Stats(ArrayList<Card> deck, Player player) {
 		this.player = player;
 		setRanking(deck, player.cards);
 

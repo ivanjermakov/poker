@@ -1,12 +1,13 @@
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class Table {
-	private Vector<Card> cards = new Vector<>();
+	private ArrayList<Card> cards = new ArrayList<>();
 
-	private Vector<Card> deck = new Vector<>();
+	private ArrayList<Card> deck = new ArrayList<>();
 
-	private Vector<Player> players = new Vector<>();
+	private ArrayList<Player> players = new ArrayList<>();
 
 	private void getCards() {
 		while (cards.size() != 52) {
@@ -47,7 +48,7 @@ public class Table {
 	}
 
 	private void setDeck() {
-		Vector<Card> hand = new Vector<>();
+		ArrayList<Card> hand = new ArrayList<>();
 
 		int i = 0;
 		while (hand.size() != 5) {
@@ -65,8 +66,8 @@ public class Table {
 		this.deck = hand;
 	}
 
-	private Vector<Card> getHand() {
-		Vector<Card> tempCards = new Vector<>();
+	private ArrayList<Card> getHand() {
+		ArrayList<Card> tempCards = new ArrayList<>();
 
 		int i = 0;
 		while (tempCards.size() != 2) {
@@ -84,7 +85,16 @@ public class Table {
 		return tempCards;
 	}
 
-	public static void sortDeck(Vector<Card> deck) {
+	public enum State {
+		NONE,
+		FLOP,
+		TURN,
+		RIVER
+	}
+
+	public State state = State.NONE;
+
+	public static void sortDeck(ArrayList<Card> deck) {
 		boolean sorted = false;
 
 		while (!sorted) {
@@ -116,11 +126,11 @@ public class Table {
 //		sortDeck();
 	}
 
-	public Vector<Card> getDeck() {
+	public ArrayList<Card> getDeck() {
 		return deck;
 	}
 
-	public Vector<Player> getPlayers() {
+	public ArrayList<Player> getPlayers() {
 		return players;
 	}
 
@@ -143,6 +153,7 @@ public class Table {
 	}
 
 	public void showPlayersHands() {
+		if (players.size() > 23) return;
 		for (int i = 0; i < players.size(); i++) {
 			System.out.print("Player " + (i + 1) + ": ");
 			players.get(i).printHand();
@@ -150,7 +161,8 @@ public class Table {
 		}
 	}
 
-	public void hand() {
+	public void showTableCards() {
+		state = State.RIVER;
 		System.out.print("Table cards: ");
 		for (Card handCard : deck) {
 			handCard.isTaken = true;
@@ -161,21 +173,35 @@ public class Table {
 		Spy spy = new Spy(this);
 	}
 
-	public void flop() {
+	public void showFlop() {
+		if (players.isEmpty()) return;
+		state = State.FLOP;
 		System.out.print("Flop: ");
 		for (int i = 0; i < 3; i++) {
 			System.out.print(Card.toShortString(cards.get(i), true) + " ");
 		}
 		System.out.println();
+
+		Spy spy = new Spy(this);
 	}
 
-	public void turn() {
+	public void showTurn() {
+		if (players.isEmpty()) return;
+		state = State.TURN;
 		System.out.print("Turn: " + Card.toShortString(cards.get(3), true) + " ");
 		System.out.println();
+
+		Spy spy = new Spy(this);
+
 	}
 
-	public void river() {
+	public void showRiver() {
+		if (players.isEmpty()) return;
+		state = State.RIVER;
 		System.out.print("River: " + Card.toShortString(cards.get(4), true) + " ");
 		System.out.println();
+
+		Spy spy = new Spy(this);
 	}
+
 }
