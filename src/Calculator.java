@@ -1,34 +1,35 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Calculator {
-
+	
 	private List<List<Card>> possibleDecks = new ArrayList<>();
-	private Table.State state = Table.State.PREFLOP;
-
+	public Table.State state = Table.State.PREFLOP;
+	
 	private void sortPlayersStats() {
 		//sort by ranking
 		boolean isSorted = false;
 		while (!isSorted) {
 			isSorted = true;
-
+			
 			for (int i = 0; i < playersStats.size() - 1; i++) {
 				if (playersStats.get(i).ranking.value < playersStats.get(i + 1).ranking.value) {
 					isSorted = false;
 					Collections.swap(playersStats, i, i + 1);
 				}
 			}
-
+			
 		}
-
+		
 		//sort by ranking kickers
 		isSorted = false;
 		while (!isSorted) {
 			isSorted = true;
-
+			
 			for (int i = 0; i < playersStats.size() - 1; i++) {
-
+				
 				if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking) {
-
+					
 					if (playersStats.get(i).rankingKickers.get(0).rank.value <
 							playersStats.get(i + 1).rankingKickers.get(0).rank.value) {
 						isSorted = false;
@@ -45,62 +46,61 @@ public class Calculator {
 						}
 					}
 				}
-
+				
 			}
-
+			
 		}
-
+		
 	}
-
+	
 	private List<Card> getContainedCards(List<Card> cards) {
 		List<Card> containedCards = new ArrayList<>();
-
+		
 		for (Card card : cards) {
 			if (!card.isTaken) {
 				Card newCard = new Card(card);
 				containedCards.add(newCard);
 			}
 		}
-
+		
 		return containedCards;
 	}
-
-	private void setPossibleFlopDecks(ArrayList<Card> flop, ArrayList<Card> cards) {
+	
+	private void setPossibleFlopDecks(List<Card> flop, List<Card> cards) {
 		for (int i = 0; i < cards.size() - 1; i++) {
 			for (int j = i + 1; j < cards.size(); j++) {
-				ArrayList<Card> possibleDeck = (ArrayList) flop.clone();
+				List<Card> possibleDeck = new ArrayList<>(flop);
 				possibleDeck.add(cards.get(i));
 				possibleDeck.add(cards.get(j));
 				possibleDecks.add(possibleDeck);
 			}
 		}
 	}
-
-	private void setPossibleTurnDecks(ArrayList<Card> turn, ArrayList<Card> cards) {
+	
+	private void setPossibleTurnDecks(List<Card> turn, List<Card> cards) {
 		for (int i = 0; i < cards.size() - 1; i++) {
-			ArrayList<Card> possibleDeck = (ArrayList) turn.clone();
+			List<Card> possibleDeck = new ArrayList<>(turn);
 			possibleDeck.add(cards.get(i));
 			possibleDecks.add(possibleDeck);
 		}
 	}
-
+	
 	private void calculateFlopRates() {
 		System.out.println("Calculating flop rates...");
 	}
-
+	
 	private void calculateTurnRates() {
 		System.out.println("Calculating turn rates...");
 
-		for (List<Card> possibleDeck : possibleDecks) {
-
-		}
+//		for (List<Card> possibleDeck : possibleDecks) {
+//		}
 	}
-
+	
 	private void calculateRiverRates() {
 		System.out.println("Calculating river rates...");
 		//all the winners should have hand as player at [0]
 		Stats winningStats = playersStats.get(0);
-
+		
 		//all the winners would divide rate
 		List<Stats> winnersStats = new ArrayList<>();
 		for (Stats playerStats : playersStats) {
@@ -109,13 +109,13 @@ public class Calculator {
 				winnersStats.add(playerStats);
 			}
 		}
-
+		
 		//divide rates (to one decimal)
 		double winnersRate = Math.round(1.0 / winnersStats.size() * 10.0) / 10.0;
 		for (Stats winnerStats : winnersStats) {
 			winnerStats.winningRate = winnersRate;
 		}
-
+		
 		//all losers rates = 0
 		for (Stats playerStats : playersStats) {
 			//he's not winner
@@ -124,7 +124,7 @@ public class Calculator {
 			}
 		}
 	}
-
+	
 	private static boolean isSameKickersRank(List<Card> hand1, List<Card> hand2) {
 		if (hand1.isEmpty() && hand2.isEmpty()) return true;
 		if (hand1.size() == hand2.size()) {
@@ -136,9 +136,9 @@ public class Calculator {
 		}
 		return true;
 	}
-
+	
 	public List<Stats> playersStats = new ArrayList<>();
-
+	
 	public Calculator(Table table) {
 		state = table.state;
 		switch (state) {
@@ -149,14 +149,14 @@ public class Calculator {
 				}
 				break;
 			case TURN:
-				setPossibleTurnDecks((ArrayList)table.commonCards, (ArrayList)getContainedCards(table.cardDeck));
+				setPossibleTurnDecks(table.commonCards, (ArrayList) getContainedCards(table.cardDeck));
 				break;
 			case FLOP:
-				setPossibleFlopDecks((ArrayList)table.commonCards, (ArrayList)getContainedCards(table.cardDeck));
+				setPossibleFlopDecks(table.commonCards, (ArrayList) getContainedCards(table.cardDeck));
 				break;
 		}
 	}
-
+	
 	public void calculateWinningRates(Table table) {
 		switch (state) {
 			case FLOP:
@@ -171,15 +171,15 @@ public class Calculator {
 			default:
 		}
 	}
-
+	
 	public void calculateStats() {
 		sortPlayersStats();
 	}
-
+	
 	public void getStats() {
 //		try {
 //			PrintWriter out = new PrintWriter("output.txt", "utf-8");
-
+		
 		for (Stats playerStats : playersStats) {
 			System.out.println(playerStats.player.name + " has " +
 					playerStats.ranking + " " +

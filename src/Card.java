@@ -16,51 +16,52 @@ class Card {
 		QUEEN(12),
 		KING(13),
 		ACE(14);
-
+		
 		public int value;
-
+		
 		Rank(int value) {
 			this.value = value;
 		}
 	}
-
+	
 	public enum Suit {
 		SPADES(0),
 		HEARTS(1),
 		DIAMONDS(2),
 		CLUBS(3);
-
+		
 		public int value;
-
+		
 		Suit(int value) {
 			this.value = value;
 		}
 	}
-
+	
 	public Rank rank;
 	public Suit suit;
 	public boolean isTaken = false;
-
+	
 	public Card() {
-		rank = Rank.values()[new Random().nextInt(Rank.values().length)];
+		//whole except ONE
+		rank = Rank.values()[1 + new Random().nextInt(Rank.values().length - 1)];
 		suit = Suit.values()[new Random().nextInt(Suit.values().length)];
 
 //		System.out.println("New card is " + rank + " of " + suit);
 	}
-
+	
 	public Card(Rank rank, Suit suit) {
 		this.rank = rank;
 		this.suit = suit;
 
 //		System.out.println("New card is " + rank + " of " + suit);
 	}
-
+	
 	public Card(Card card) {
 		this.rank = card.rank;
 		this.suit = card.suit;
 		this.isTaken = card.isTaken;
 	}
-
+	
 	public static String toShortString(Card card, boolean colored) {
 		String rank;
 		switch (card.rank) {
@@ -107,7 +108,7 @@ class Card {
 			default:
 				rank = "und";
 		}
-
+		
 		String suit;
 		switch (card.suit) {
 			case CLUBS:
@@ -133,17 +134,17 @@ class Card {
 			default:
 				suit = "und";
 		}
-
+		
 		return rank + suit;
 	}
-
+	
 	public static String toShortStrings(List<Card> cards, boolean colored) {
 		StringBuilder string = new StringBuilder();
-
+		
 		for (Card card : cards) {
 			string.append(Card.toShortString(card, colored)).append(" ");
 		}
 		return string.toString();
 	}
-
+	
 }

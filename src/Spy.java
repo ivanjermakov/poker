@@ -1,7 +1,7 @@
 class Spy {
 	public Spy(Table table) {
 		Calculator calculator = new Calculator(table);
-		switch (table.state) {
+		switch (calculator.state) {
 			case RIVER:
 				calculator.calculateStats();
 				calculator.calculateWinningRates(table);
@@ -11,8 +11,7 @@ class Spy {
 			case TURN:
 				calculator.calculateWinningRates(table);
 				break;
-			default:
 		}
 	}
-
+	
 }
