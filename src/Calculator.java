@@ -24,47 +24,24 @@ public class Calculator {
 			isSorted = true;
 
 			for (int i = 0; i < playersStats.size() - 1; i++) {
-				//	NOT THE CASE WITH STRAIGHT TO ACE
-				if (playersStats.get(i).ranking != Stats.Ranking.STRAIGHT &&
-						playersStats.get(i).ranking != Stats.Ranking.STRAIGHT_FLUSH &&
-						playersStats.get(i).rankingKickers.get(0).rank.value != 14) {
-
-					if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking) {
-						if (playersStats.get(i).rankingKickers.get(0).rank.value <
-								playersStats.get(i + 1).rankingKickers.get(0).rank.value) {
-							isSorted = false;
-							Collections.swap(playersStats, i, i + 1);
-						} else if (playersStats.get(i).rankingKickers.get(0).rank ==
-								playersStats.get(i + 1).rankingKickers.get(0).rank) {
-							if (playersStats.get(i).rankingKickers.size() == 2 &&
-									playersStats.get(i + 1).rankingKickers.size() == 2) {
-								if (playersStats.get(i).rankingKickers.get(1).rank.value <
-										playersStats.get(i + 1).rankingKickers.get(1).rank.value) {
-									isSorted = false;
-									Collections.swap(playersStats, i, i + 1);
-								}
+				if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking) {
+					if (playersStats.get(i).rankingKickers.get(0).rank.value <
+							playersStats.get(i + 1).rankingKickers.get(0).rank.value) {
+						isSorted = false;
+						Collections.swap(playersStats, i, i + 1);
+					} else if (playersStats.get(i).rankingKickers.get(0).rank ==
+							playersStats.get(i + 1).rankingKickers.get(0).rank) {
+						if (playersStats.get(i).rankingKickers.size() == 2 &&
+								playersStats.get(i + 1).rankingKickers.size() == 2) {
+							if (playersStats.get(i).rankingKickers.get(1).rank.value <
+									playersStats.get(i + 1).rankingKickers.get(1).rank.value) {
+								isSorted = false;
+								Collections.swap(playersStats, i, i + 1);
 							}
 						}
 					}
-
 				}
 
-			}
-
-		}
-
-		//straight to Ace
-		for (int i = 0; i < playersStats.size() - 1; i++) {
-			if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking) {
-				if (playersStats.get(i).ranking == Stats.Ranking.STRAIGHT ||
-						playersStats.get(i).ranking == Stats.Ranking.STRAIGHT_FLUSH) {
-					//any straight better than straight to Ace
-					if (playersStats.get(i).rankingKickers.get(0).rank.value == 14 &&
-							playersStats.get(i + 1).rankingKickers.get(0).rank.value != 14) {
-						isSorted = false;
-						Collections.swap(playersStats, i, i + 1);
-					}
-				}
 			}
 
 		}
@@ -161,7 +138,7 @@ public class Calculator {
 					playerStats.ranking + " " +
 					Card.toShortStrings(playerStats.rankingKickers, true) +
 					"with " + Card.toShortStrings(playerStats.bestHand, true) +
-			"(" + playerStats.winningRate * 100 + "%)");
+					"(" + playerStats.winningRate * 100 + "%)");
 //				out.append(playerStats.player.name)
 //						.append(" has ")
 //						.append(String.valueOf(playerStats.ranking))

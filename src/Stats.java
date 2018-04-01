@@ -255,6 +255,7 @@ public class Stats {
 			case STRAIGHT:
 				//Ace as 1
 				if (bestHand.get(0).rank.value == 14 && bestHand.get(4).rank.value == 2) {
+					bestHand.get(0).rank.value = 1;
 					//add Ace
 					rankingKickers.add(bestHand.get(0));
 				} else {

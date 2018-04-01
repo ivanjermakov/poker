@@ -2,6 +2,7 @@ import java.util.*;
 
 class Card {
 	public enum Rank {
+		ONE(1),
 		TWO(2),
 		THREE(3),
 		FOUR(4),
@@ -47,6 +48,13 @@ class Card {
 //		System.out.println("New card is " + rank + " of " + suit);
 	}
 
+	public Card(Rank rank, Suit suit) {
+		this.rank = rank;
+		this.suit = suit;
+
+//		System.out.println("New card is " + rank + " of " + suit);
+	}
+
 	public static String toShortString(Card card, boolean colored) {
 		String rank;
 		switch (card.rank) {
@@ -86,6 +94,7 @@ class Card {
 			case KING:
 				rank = "K";
 				break;
+			case ONE:
 			case ACE:
 				rank = "A";
 				break;
