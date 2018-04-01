@@ -86,18 +86,12 @@ public class Calculator {
 	}
 	
 	private void calculateFlopRates() {
-		System.out.println("Calculating flop rates...");
 	}
 	
 	private void calculateTurnRates() {
-		System.out.println("Calculating turn rates...");
-
-//		for (List<Card> possibleDeck : possibleDecks) {
-//		}
 	}
 	
 	private void calculateRiverRates() {
-		System.out.println("Calculating river rates...");
 		//all the winners should have hand as player at [0]
 		Stats winningStats = playersStats.get(0);
 		

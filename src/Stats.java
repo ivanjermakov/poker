@@ -214,6 +214,7 @@ public class Stats {
 	}
 	
 	private void sortByKickers() {
+		if (possibleBestHands.size() == 1) return;
 		//sort by biggest rank
 		boolean isSorted = false;
 		
