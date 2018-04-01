@@ -106,8 +106,8 @@ public class Calculator {
 			}
 		}
 
-		//divide rates
-		double winnersRate = Math.round(1.0 / winnersStats.size() * 100.0) / 100.0;
+		//divide rates (to one decimal)
+		double winnersRate = Math.round(1.0 / winnersStats.size() * 10.0) / 10.0;
 		for (Stats winnerStats : winnersStats) {
 			winnerStats.winningRate = winnersRate;
 		}
