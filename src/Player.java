@@ -4,16 +4,16 @@ class Player {
 
 	public String name;
 
-	public ArrayList<Card> cards;
+	public ArrayList<Card> hand;
 
 	public void sortHand() {
-		if (cards.get(0).rank.value < cards.get(1).rank.value) {
-			Collections.swap(cards, 0, 1);
+		if (hand.get(0).rank.value < hand.get(1).rank.value) {
+			Collections.swap(hand, 0, 1);
 		}
 
-		if (cards.get(0).rank == cards.get(1).rank) {
-			if (cards.get(0).suit.value < cards.get(1).suit.value) {
-				Collections.swap(cards, 0, 1);
+		if (hand.get(0).rank == hand.get(1).rank) {
+			if (hand.get(0).suit.value < hand.get(1).suit.value) {
+				Collections.swap(hand, 0, 1);
 			}
 		}
 	}
@@ -23,7 +23,7 @@ class Player {
 	}
 
 	public void printHand() {
-		for (Card card : cards) {
+		for (Card card : hand) {
 			System.out.print(Card.toShortString(card, true) + " ");
 		}
 	}

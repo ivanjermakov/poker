@@ -2,16 +2,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Table {
-	private ArrayList<Card> cards = new ArrayList<>();
+	private ArrayList<Card> cardDeck = new ArrayList<>();
 
-	private ArrayList<Card> deck = new ArrayList<>();
+	private ArrayList<Card> commonCards = new ArrayList<>();
 
 	private int playersAmount;
 
 	private ArrayList<Player> players = new ArrayList<>();
 
 	private void setCards() {
-		while (cards.size() != 52) {
+		while (cardDeck.size() != 52) {
 			Card card = new Card();
 			add(card);
 		}
@@ -19,7 +19,7 @@ public class Table {
 	}
 
 	private boolean isFilled() {
-		for (Card card : cards) {
+		for (Card card : cardDeck) {
 			if (card == null) {
 				return false;
 			}
@@ -29,7 +29,7 @@ public class Table {
 	}
 
 	private boolean contains(Card currentCard) {
-		for (Card card : cards) {
+		for (Card card : cardDeck) {
 			if (card == currentCard) {
 				return true;
 			}
@@ -39,13 +39,13 @@ public class Table {
 	}
 
 	private void add(Card card) {
-		for (Card i : cards) {
+		for (Card i : cardDeck) {
 			if (i.rank.value == card.rank.value && i.suit.value == card.suit.value) {
 				return;
 			}
 		}
 
-		cards.add(card);
+		cardDeck.add(card);
 	}
 
 	private void setDeck() {
@@ -53,72 +53,72 @@ public class Table {
 
 		int i = 0;
 		while (deck.size() != 5) {
-			if (i >= cards.size()) {
-				this.deck = deck;
+			if (i >= cardDeck.size()) {
+				this.commonCards = deck;
 			}
 
-			if (!cards.get(i).isTaken) {
-				cards.get(i).isTaken = true;
-				deck.add(cards.get(i));
+			if (!cardDeck.get(i).isTaken) {
+				cardDeck.get(i).isTaken = true;
+				deck.add(cardDeck.get(i));
 			}
 			++i;
 		}
 
-		this.deck = deck;
+		this.commonCards = deck;
 	}
 
 	private void setFlop() {
-		if (!deck.isEmpty()) return;
+		if (!commonCards.isEmpty()) return;
 		ArrayList<Card> flop = new ArrayList<>();
 
 		int i = 0;
 		while (flop.size() != 3) {
-			if (i >= cards.size()) {
-				this.deck = flop;
+			if (i >= cardDeck.size()) {
+				this.commonCards = flop;
 			}
 
-			if (!cards.get(i).isTaken) {
-				cards.get(i).isTaken = true;
-				flop.add(cards.get(i));
+			if (!cardDeck.get(i).isTaken) {
+				cardDeck.get(i).isTaken = true;
+				flop.add(cardDeck.get(i));
 			}
 			++i;
 		}
 
-		this.deck = flop;
+		this.commonCards = flop;
 	}
 
 	private void setTurn() {
-		if (deck.size() != 3) return;
+		if (commonCards.size() != 3) return;
 		Card card = null;
 
 		int i = 0;
-		while (i <= cards.size()) {
-			if (!cards.get(i).isTaken) {
-				cards.get(i).isTaken = true;
-				card = cards.get(i);
+		while (i <= cardDeck.size()) {
+			if (!cardDeck.get(i).isTaken) {
+				cardDeck.get(i).isTaken = true;
+				card = cardDeck.get(i);
 				break;
 			}
 			++i;
 		}
 
-		this.deck.add(card);
+		this.commonCards.add(card);
 	}
 
 	private void setRiver() {
-		if (deck.size() != 4) return;
+		if (commonCards.size() != 4) return;
 		Card card = null;
 
 		int i = 0;
-		while (i <= cards.size()) {
-			if (!cards.get(i).isTaken) {
-				cards.get(i).isTaken = true;
-				card = cards.get(i);
+		while (i <= cardDeck.size()) {
+			if (!cardDeck.get(i).isTaken) {
+				cardDeck.get(i).isTaken = true;
+				card = cardDeck.get(i);
 				break;
 			}
 			++i;
 		}
 
-		this.deck.add(card);
+		this.commonCards.add(card);
 	}
 
 	private ArrayList<Card> getHand() {
@@ -126,13 +126,13 @@ public class Table {
 
 		int i = 0;
 		while (tempCards.size() != 2) {
-			if (i >= cards.size()) {
+			if (i >= cardDeck.size()) {
 				return tempCards;
 			}
 
-			if (!cards.get(i).isTaken) {
-				tempCards.add(cards.get(i));
-				cards.get(i).isTaken = true;
+			if (!cardDeck.get(i).isTaken) {
+				tempCards.add(cardDeck.get(i));
+				cardDeck.get(i).isTaken = true;
 			}
 			++i;
 		}
@@ -181,8 +181,12 @@ public class Table {
 //		sortCards();
 	}
 
-	public ArrayList<Card> getDeck() {
-		return deck;
+	public ArrayList<Card> getCommonCards() {
+		return commonCards;
+	}
+
+	public ArrayList<Card> getCardDeck() {
+		return cardDeck;
 	}
 
 	public ArrayList<Player> getPlayers() {
@@ -206,7 +210,7 @@ public class Table {
 
 	public void addPlayer(String name) {
 		Player player = new Player(name);
-		player.cards = getHand();
+		player.hand = getHand();
 		player.sortHand();
 		players.add(player);
 	}
@@ -222,11 +226,11 @@ public class Table {
 
 	public void showTableCards() {
 		setDeck();
-		sortCards(deck);
+		sortCards(commonCards);
 
 		state = State.RIVER;
-		System.out.print("Table cards: ");
-		for (Card handCard : deck) {
+		System.out.print("Table cardDeck: ");
+		for (Card handCard : commonCards) {
 			handCard.isTaken = true;
 			System.out.print(Card.toShortString(handCard, true) + " ");
 		}
@@ -237,12 +241,12 @@ public class Table {
 
 	public void showFlop() {
 		setFlop();
-		sortCards(deck);
+		sortCards(commonCards);
 		if (players.isEmpty()) return;
 		state = State.FLOP;
 		System.out.print("Flop: ");
 		for (int i = 0; i < 3; i++) {
-			System.out.print(Card.toShortString(cards.get(i), true) + " ");
+			System.out.print(Card.toShortString(cardDeck.get(i), true) + " ");
 		}
 		System.out.println();
 
@@ -251,10 +255,10 @@ public class Table {
 
 	public void showTurn() {
 		setTurn();
-		sortCards(deck);
+		sortCards(commonCards);
 		if (players.isEmpty()) return;
 		state = State.TURN;
-		System.out.print("Turn: " + Card.toShortString(cards.get(3), true) + " ");
+		System.out.print("Turn: " + Card.toShortString(cardDeck.get(3), true) + " ");
 		System.out.println();
 
 		Spy spy = new Spy(this);
@@ -263,10 +267,10 @@ public class Table {
 
 	public void showRiver() {
 		setRiver();
-		sortCards(deck);
+		sortCards(commonCards);
 		if (players.isEmpty()) return;
 		state = State.RIVER;
-		System.out.print("River: " + Card.toShortString(cards.get(4), true) + " ");
+		System.out.print("River: " + Card.toShortString(cardDeck.get(4), true) + " ");
 		System.out.println();
 
 		Spy spy = new Spy(this);

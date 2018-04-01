@@ -55,6 +55,12 @@ class Card {
 //		System.out.println("New card is " + rank + " of " + suit);
 	}
 
+	public Card(Card card) {
+		this.rank = card.rank;
+		this.suit = card.suit;
+		this.isTaken = card.isTaken;
+	}
+
 	public static String toShortString(Card card, boolean colored) {
 		String rank;
 		switch (card.rank) {

@@ -2,6 +2,7 @@ import java.util.*;
 
 public class Calculator {
 
+	private ArrayList<ArrayList<Card>> possibleDecks = new ArrayList<>();
 	private Table.State state = Table.State.NONE;
 
 	private void sortPlayersStats() {
@@ -48,6 +49,39 @@ public class Calculator {
 
 	}
 
+	private ArrayList<Card> getContainedCards(ArrayList<Card> cards) {
+		ArrayList<Card> containedCards = new ArrayList<>();
+
+		for (Card card : cards) {
+			if (!card.isTaken) {
+				Card newCard = new Card(card);
+				containedCards.add(newCard);
+			}
+		}
+
+		return containedCards;
+	}
+
+	private void setPossibleFlopDecks(ArrayList<Card> flop, ArrayList<Card> cards) {
+
+		for (int i = 0; i < cards.size() - 1; i++) {
+			for (int j = i + 1; j < cards.size(); j++) {
+				ArrayList<Card> possibleDeck = (ArrayList) flop.clone();
+				possibleDeck.add(cards.get(i));
+				possibleDeck.add(cards.get(j));
+				possibleDecks.add(possibleDeck);
+			}
+		}
+	}
+
+	private void setPossibleTurnDecks(ArrayList<Card> turn, ArrayList<Card> cards) {
+		for (int i = 0; i < cards.size() - 1; i++) {
+			ArrayList<Card> possibleDeck = (ArrayList) turn.clone();
+			possibleDeck.add(cards.get(i));
+			possibleDecks.add(possibleDeck);
+		}
+	}
+
 	private void calculateFlopRates() {
 		System.out.println("Calculating flop rates...");
 	}
@@ -55,18 +89,9 @@ public class Calculator {
 	private void calculateTurnRates() {
 		System.out.println("Calculating turn rates...");
 
-	}
+		for (ArrayList<Card> possibleDeck : possibleDecks) {
 
-	private static boolean isSameKickersRank(ArrayList<Card> hand1, ArrayList<Card> hand2) {
-		if (hand1.isEmpty() && hand2.isEmpty()) return true;
-		if (hand1.size() == hand2.size()) {
-			for (int i = 0; i < hand1.size(); i++) {
-				if (hand1.get(i).rank.value != hand2.get(i).rank.value) {
-					return false;
-				}
-			}
 		}
-		return true;
 	}
 
 	private void calculateRiverRates() {
@@ -98,19 +123,39 @@ public class Calculator {
 		}
 	}
 
+	private static boolean isSameKickersRank(ArrayList<Card> hand1, ArrayList<Card> hand2) {
+		if (hand1.isEmpty() && hand2.isEmpty()) return true;
+		if (hand1.size() == hand2.size()) {
+			for (int i = 0; i < hand1.size(); i++) {
+				if (hand1.get(i).rank.value != hand2.get(i).rank.value) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	public ArrayList<Stats> playersStats = new ArrayList<>();
 
 	public Calculator(Table table) {
 		state = table.state;
-		if (state == Table.State.RIVER) {
-			for (Player player : table.getPlayers()) {
-				Stats stats = new Stats(table.getDeck(), player);
-				playersStats.add(stats);
-			}
+		switch (state) {
+			case RIVER:
+				for (Player player : table.getPlayers()) {
+					Stats stats = new Stats(table.getCommonCards(), player);
+					playersStats.add(stats);
+				}
+				break;
+			case TURN:
+				setPossibleTurnDecks(table.getCommonCards(), getContainedCards(table.getCardDeck()));
+				break;
+			case FLOP:
+				setPossibleFlopDecks(table.getCommonCards(), getContainedCards(table.getCardDeck()));
+				break;
 		}
 	}
 
-	public void calculateWinningRates() {
+	public void calculateWinningRates(Table table) {
 		switch (state) {
 			case FLOP:
 				calculateFlopRates();

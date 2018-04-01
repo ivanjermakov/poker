@@ -193,7 +193,7 @@ public class Stats {
 	private void setRanking(final ArrayList<Card> deck, ArrayList<Card> hand) {
 		ArrayList<Pair<Ranking, ArrayList<Card>>> rankings = new ArrayList<>();
 
-		//table cards only
+		//table hand only
 		Pair pair = new Pair();
 		pair.first = setRanking(deck);
 		pair.second = deck;
@@ -221,7 +221,7 @@ public class Stats {
 			rankings.add(pair);
 		}
 
-		//both printHand cards
+		//both printHand hand
 		for (int i = 0; i < 4; i++) {
 			for (int j = i + 1; j < 5; j++) {
 				//first is first
@@ -295,7 +295,7 @@ public class Stats {
 
 	public Stats(ArrayList<Card> deck, Player player) {
 		this.player = player;
-		setRanking(deck, player.cards);
+		setRanking(deck, player.hand);
 
 		setRankingKicker();
 	}

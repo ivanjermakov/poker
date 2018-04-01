@@ -4,12 +4,12 @@ class Spy {
 		switch (table.state) {
 			case RIVER:
 				calculator.calculateStats();
-				calculator.calculateWinningRates();
+				calculator.calculateWinningRates(table);
 				calculator.getStats();
 				break;
 			case FLOP:
 			case TURN:
-				calculator.calculateWinningRates();
+				calculator.calculateWinningRates(table);
 				break;
 			default:
 		}
