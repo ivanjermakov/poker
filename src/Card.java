@@ -137,12 +137,99 @@ class Card {
 	}
 	
 	public static String toShortStrings(List<Card> cards, boolean colored) {
+		
 		StringBuilder string = new StringBuilder();
 		
 		for (Card card : cards) {
 			string.append(Card.toShortString(card, colored)).append(" ");
 		}
 		return string.toString();
+	}
+	
+	//TODO: redraw straight to ace
+	public static String toShortStrings(Stats stats, boolean colored) {
+		String string = "";
+		for (Card card : stats.bestHand) {
+			String rank;
+			switch (card.rank) {
+				case TWO:
+					rank = "2";
+					break;
+				case THREE:
+					rank = "3";
+					break;
+				case FOUR:
+					rank = "4";
+					break;
+				case FIVE:
+					rank = "5";
+					break;
+				case SIX:
+					rank = "6";
+					break;
+				case SEVEN:
+					rank = "7";
+					break;
+				case EIGHT:
+					rank = "8";
+					break;
+				case NINE:
+					rank = "9";
+					break;
+				case TEN:
+					rank = "10";
+					break;
+				case JACK:
+					rank = "J";
+					break;
+				case QUEEN:
+					rank = "Q";
+					break;
+				case KING:
+					rank = "K";
+					break;
+				case ACE:
+					rank = "A";
+					break;
+				default:
+					rank = "und";
+			}
+			
+			if (card == stats.player.hand.get(0) ||
+					card == stats.player.hand.get(1))  {
+				rank = "\u001B[32m" + rank + "\u001B[0m";
+			}
+			
+			String suit;
+			switch (card.suit) {
+				case CLUBS:
+					suit = "♣";
+					break;
+				case HEARTS:
+					if (colored) {
+						suit = "\u001B[31m" + "♥" + "\u001B[0m";
+					} else {
+						suit = "♥";
+					}
+					break;
+				case SPADES:
+					suit = "♠";
+					break;
+				case DIAMONDS:
+					if (colored) {
+						suit = "\u001B[31m" + "♦" + "\u001B[0m";
+					} else {
+						suit = "♦";
+					}
+					break;
+				default:
+					suit = "und";
+			}
+			
+			string += rank + suit + " ";
+		}
+		
+		return string;
 	}
 	
 }

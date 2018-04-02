@@ -217,28 +217,14 @@ public class Calculator {
 	}
 	
 	public void getStats() {
-//		try {
-//			PrintWriter out = new PrintWriter("output.txt", "utf-8");
-		
 		for (Stats playerStats : playersStats) {
 			System.out.println(
-					Card.toShortStrings(playerStats.bestHand, true) + " " +
+					Card.toShortStrings(playerStats, true) + " " +
 							playerStats.player.name + " has " +
 							playerStats.ranking + " " +
 							Card.toShortStrings(playerStats.rankingKickers, true) +
 							"(" + playerStats.winningRate + ")"
 			);
-//				out.append(playerStats.player.name)
-//						.append(" has ")
-//						.append(String.valueOf(playerStats.ranking))
-//						.append(" ")
-//						.append(Card.toShortStrings(playerStats.rankingKickers, false))
-//						.append("with ").append(Card.toShortStrings(playerStats.bestHand, false))
-//						.append(String.valueOf('\n'));
 		}
-//			out.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 }

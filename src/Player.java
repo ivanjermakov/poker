@@ -1,5 +1,6 @@
 import java.util.*;
 
+//TODO: move there Stats methods getting best hand
 class Player {
 	
 	public String name;
