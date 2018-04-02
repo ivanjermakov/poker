@@ -228,31 +228,6 @@ public class Stats {
 			}
 		}
 		
-//		//for every col of ranks
-//		for (int j = 1; j < 5; j++) {
-//			isSorted = false;
-//
-//			while (!isSorted) {
-//				isSorted = true;
-//
-//				for (int i = 0; i < possibleBestHands.size() - 1; i++) {
-//
-//					//only if previous the same
-//					if (possibleBestHands.get(i).bestHand.get(j - 1).rank ==
-//							possibleBestHands.get(i + 1).bestHand.get(j - 1).rank &&
-//							possibleBestHands.get(i).bestHand.get(j).rank.value <
-//									possibleBestHands.get(i + 1).bestHand.get(j).rank.value) {
-//						isSorted = false;
-//						Collections.swap(possibleBestHands, i, i + 1);
-//						break;
-//					}
-//
-//				}
-//
-//			}
-//
-//		}
-	
 	}
 	
 	private void setBestHand() {

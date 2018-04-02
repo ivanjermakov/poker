@@ -17,40 +17,37 @@ public class Calculator {
 				//same ranking kickers
 				//first kicker is the same
 				//first col
-				if (playersStats.get(i).rankingKickers.size() >= 1 && playersStats.get(i + 1).rankingKickers.size() >= 1) {
-					if (playersStats.get(i).rankingKickers.get(0).rank == playersStats.get(i + 1).rankingKickers.get(0).rank) {
-						//second kicker is present and the same
-						if (playersStats.get(i).rankingKickers.size() == 2 && playersStats.get(i + 1).rankingKickers.size() == 2) {
-							if (playersStats.get(i).rankingKickers.get(0).rank == playersStats.get(i + 1).rankingKickers.get(0).rank) {
-								if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
+				if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
+						playersStats.get(i).bestHand.get(0).rank.value < playersStats.get(i + 1).bestHand.get(0).rank.value) {
+					//has ranking kickers
+					if (playersStats.get(i).rankingKickers.size() >= 1 && playersStats.get(i + 1).rankingKickers.size() >= 1) {
+						if (playersStats.get(i).rankingKickers.get(0).rank == playersStats.get(i + 1).rankingKickers.get(0).rank) {
+							//second ranking kicker is present and the same
+							if (playersStats.get(i).rankingKickers.size() == 2 && playersStats.get(i + 1).rankingKickers.size() == 2) {
+								if (playersStats.get(i).rankingKickers.get(0).rank == playersStats.get(i + 1).rankingKickers.get(0).rank &&
+										playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
 										playersStats.get(i).bestHand.get(0).rank.value < playersStats.get(i + 1).bestHand.get(0).rank.value) {
 									isSorted = false;
 									Collections.swap(playersStats, i, i + 1);
 									break;
 								}
-							}
-						} else {
-							if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
-									playersStats.get(i).bestHand.get(0).rank.value < playersStats.get(i + 1).bestHand.get(0).rank.value) {
+							} else {
 								isSorted = false;
 								Collections.swap(playersStats, i, i + 1);
 								break;
 							}
 						}
-					}
-					//no ranking kickers
-				} else {
-					if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
-							playersStats.get(i).bestHand.get(0).rank.value < playersStats.get(i + 1).bestHand.get(0).rank.value) {
+						//no ranking kickers
+					} else {
 						isSorted = false;
 						Collections.swap(playersStats, i, i + 1);
 						break;
 					}
+					
 				}
-				
 			}
 		}
-
+		
 	}
 	
 	private void sortPlayersStats() {
