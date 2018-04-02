@@ -1,11 +1,15 @@
 import java.util.*;
 
-//TODO: move there Stats methods getting best hand
 class Player {
 	
 	public String name;
-	
 	public List<Card> hand;
+	public Stats stats;
+	
+	public void setStats(Table table) {
+		Stats stats = new Stats(table, this);
+		this.stats = stats.getStats();
+	}
 	
 	public void sortHand() {
 		if (hand.get(0).rank.value < hand.get(1).rank.value) {

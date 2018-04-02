@@ -4,43 +4,43 @@ public class Calculator {
 	
 	private List<List<Card>> possibleDecks = new ArrayList<>();
 	public Table.State state = Table.State.PREFLOP;
-	public List<Stats> playersStats = new ArrayList<>();
+	public List<Player> players = new ArrayList<>();
 	
 	private void sortByKickers() {
-		if (playersStats.size() == 1) return;
+		if (players.size() <= 1) return;
 		
 		boolean isSorted = false;
 		
 		while (!isSorted) {
-			for (int i = 0; i < playersStats.size() - 1; i++) {
+			for (int i = 0; i < players.size() - 1; i++) {
 				isSorted = true;
 				//same ranking kickers
 				//first kicker is the same
 				//first col
-				if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
-						playersStats.get(i).bestHand.get(0).rank.value < playersStats.get(i + 1).bestHand.get(0).rank.value) {
+				if (players.get(i).stats.ranking == players.get(i + 1).stats.ranking &&
+						players.get(i).stats.bestHand.get(0).rank.value < players.get(i + 1).stats.bestHand.get(0).rank.value) {
 					//has ranking kickers
-					if (playersStats.get(i).rankingKickers.size() >= 1 && playersStats.get(i + 1).rankingKickers.size() >= 1) {
-						if (playersStats.get(i).rankingKickers.get(0).rank == playersStats.get(i + 1).rankingKickers.get(0).rank) {
+					if (players.get(i).stats.rankingKickers.size() >= 1 && players.get(i + 1).stats.rankingKickers.size() >= 1) {
+						if (players.get(i).stats.rankingKickers.get(0).rank == players.get(i + 1).stats.rankingKickers.get(0).rank) {
 							//second ranking kicker is present and the same
-							if (playersStats.get(i).rankingKickers.size() == 2 && playersStats.get(i + 1).rankingKickers.size() == 2) {
-								if (playersStats.get(i).rankingKickers.get(0).rank == playersStats.get(i + 1).rankingKickers.get(0).rank &&
-										playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
-										playersStats.get(i).bestHand.get(0).rank.value < playersStats.get(i + 1).bestHand.get(0).rank.value) {
+							if (players.get(i).stats.rankingKickers.size() == 2 && players.get(i + 1).stats.rankingKickers.size() == 2) {
+								if (players.get(i).stats.rankingKickers.get(0).rank == players.get(i + 1).stats.rankingKickers.get(0).rank &&
+										players.get(i).stats.ranking == players.get(i + 1).stats.ranking &&
+										players.get(i).stats.bestHand.get(0).rank.value < players.get(i + 1).stats.bestHand.get(0).rank.value) {
 									isSorted = false;
-									Collections.swap(playersStats, i, i + 1);
+									Collections.swap(players, i, i + 1);
 									break;
 								}
 							} else {
 								isSorted = false;
-								Collections.swap(playersStats, i, i + 1);
+								Collections.swap(players, i, i + 1);
 								break;
 							}
 						}
 						//no ranking kickers
 					} else {
 						isSorted = false;
-						Collections.swap(playersStats, i, i + 1);
+						Collections.swap(players, i, i + 1);
 						break;
 					}
 					
@@ -56,10 +56,10 @@ public class Calculator {
 		while (!isSorted) {
 			isSorted = true;
 			
-			for (int i = 0; i < playersStats.size() - 1; i++) {
-				if (playersStats.get(i).ranking.value < playersStats.get(i + 1).ranking.value) {
+			for (int i = 0; i < players.size() - 1; i++) {
+				if (players.get(i).stats.ranking.value < players.get(i + 1).stats.ranking.value) {
 					isSorted = false;
-					Collections.swap(playersStats, i, i + 1);
+					Collections.swap(players, i, i + 1);
 				}
 			}
 			
@@ -70,23 +70,23 @@ public class Calculator {
 		while (!isSorted) {
 			isSorted = true;
 			
-			for (int i = 0; i < playersStats.size() - 1; i++) {
+			for (int i = 0; i < players.size() - 1; i++) {
 				
-				if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
-						!playersStats.get(i).rankingKickers.isEmpty()) {
+				if (players.get(i).stats.ranking == players.get(i + 1).stats.ranking &&
+						!players.get(i).stats.rankingKickers.isEmpty()) {
 					
-					if (playersStats.get(i).rankingKickers.get(0).rank.value <
-							playersStats.get(i + 1).rankingKickers.get(0).rank.value) {
+					if (players.get(i).stats.rankingKickers.get(0).rank.value <
+							players.get(i + 1).stats.rankingKickers.get(0).rank.value) {
 						isSorted = false;
-						Collections.swap(playersStats, i, i + 1);
-					} else if (playersStats.get(i).rankingKickers.get(0).rank ==
-							playersStats.get(i + 1).rankingKickers.get(0).rank) {
-						if (playersStats.get(i).rankingKickers.size() == 2 &&
-								playersStats.get(i + 1).rankingKickers.size() == 2) {
-							if (playersStats.get(i).rankingKickers.get(1).rank.value <
-									playersStats.get(i + 1).rankingKickers.get(1).rank.value) {
+						Collections.swap(players, i, i + 1);
+					} else if (players.get(i).stats.rankingKickers.get(0).rank ==
+							players.get(i + 1).stats.rankingKickers.get(0).rank) {
+						if (players.get(i).stats.rankingKickers.size() == 2 &&
+								players.get(i + 1).stats.rankingKickers.size() == 2) {
+							if (players.get(i).stats.rankingKickers.get(1).rank.value <
+									players.get(i + 1).stats.rankingKickers.get(1).rank.value) {
 								isSorted = false;
-								Collections.swap(playersStats, i, i + 1);
+								Collections.swap(players, i, i + 1);
 							}
 						}
 					}
@@ -140,13 +140,13 @@ public class Calculator {
 	
 	private void calculateRiverRates() {
 		//all the winners should have hand as player at [0]
-		Stats winningStats = playersStats.get(0);
+		Player winningStats = players.get(0);
 		
 		//all the winners would divide rate
-		List<Stats> winnersStats = new ArrayList<>();
-		for (Stats playerStats : playersStats) {
-			if (playerStats.ranking == winningStats.ranking &&
-					isSameHandsRanks(playerStats.rankingKickers, winningStats.rankingKickers)) {
+		List<Player> winnersStats = new ArrayList<>();
+		for (Player playerStats : players) {
+			if (playerStats.stats.ranking == winningStats.stats.ranking &&
+					isSameHandsRanks(playerStats.stats.rankingKickers, winningStats.stats.rankingKickers)) {
 				winnersStats.add(playerStats);
 			}
 		}
@@ -154,15 +154,15 @@ public class Calculator {
 		//divide rates (to three decimal)
 		double winnersRate = 1.0 / winnersStats.size();
 		winnersRate = Math.round(winnersRate * 1000) / 1000d;
-		for (Stats winnerStats : winnersStats) {
-			winnerStats.winningRate = winnersRate;
+		for (Player winnerStats : winnersStats) {
+			winnerStats.stats.winningRate = winnersRate;
 		}
 		
 		//all losers rates = 0
-		for (Stats playerStats : playersStats) {
+		for (Player playerStats : players) {
 			//he's not winner
-			if (playerStats.winningRate == -1.0) {
-				playerStats.winningRate = 0.0;
+			if (playerStats.stats.winningRate == -1.0) {
+				playerStats.stats.winningRate = 0.0;
 			}
 		}
 	}
@@ -184,15 +184,15 @@ public class Calculator {
 		switch (state) {
 			case RIVER:
 				for (Player player : table.players) {
-					Stats stats = new Stats(table.commonCards, player);
-					playersStats.add(stats);
+					player.setStats(table);
+					players.add(player);
 				}
 				break;
 			case TURN:
-				setPossibleTurnDecks(table.commonCards, (ArrayList) getContainedCards(table.cardDeck));
+				setPossibleTurnDecks(table.commonCards, getContainedCards(table.cardDeck));
 				break;
 			case FLOP:
-				setPossibleFlopDecks(table.commonCards, (ArrayList) getContainedCards(table.cardDeck));
+				setPossibleFlopDecks(table.commonCards, getContainedCards(table.cardDeck));
 				break;
 		}
 	}
@@ -217,16 +217,17 @@ public class Calculator {
 	}
 	
 	public void showStats() {
-		for (Stats playerStats : playersStats) {
+		for (Player player : players) {
 			System.out.println(
-					Card.toShortStrings(playerStats, true) + " " +
-							playerStats.player.name + " has " +
-							playerStats.ranking + " " +
-							Card.toShortStrings(playerStats.rankingKickers, true) +
+					Card.toShortStrings(player, true) + " " +
+							player.name + " has " +
+							player.stats.ranking + " " +
+							Card.toShortStrings(player.stats.rankingKickers, true) +
 							//format rate as ##.#%
-							"(" + Math.round((playerStats.winningRate * 100) * 1000) / 1000d + "%)"
+							"(" + Math.round((player.stats.winningRate * 100) * 1000) / 1000d + "%)"
 			);
 		}
+		
 	}
 	
 }

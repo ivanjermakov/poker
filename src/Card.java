@@ -146,13 +146,13 @@ class Card {
 		return string.toString();
 	}
 	
-	public static String toShortStrings(Stats stats, boolean colored) {
+	public static String toShortStrings(Player player, boolean colored) {
 		//swap for draw and then sort to fix
-		if (stats.ranking == Stats.Ranking.STRAIGHT_TO_ACE) {
-			stats.bestHand.add(stats.bestHand.remove(0));
+		if (player.stats.ranking == Stats.Ranking.STRAIGHT_TO_ACE) {
+			player.stats.bestHand.add(player.stats.bestHand.remove(0));
 		}
 		String string = "";
-		for (Card card : stats.bestHand) {
+		for (Card card : player.stats.bestHand) {
 			String rank;
 			switch (card.rank) {
 				case TWO:
@@ -198,8 +198,8 @@ class Card {
 					rank = "und";
 			}
 			
-			if (card == stats.player.hand.get(0) ||
-					card == stats.player.hand.get(1))  {
+			if (card == player.hand.get(0) ||
+					card == player.hand.get(1))  {
 				rank = "\u001B[32m" + rank + "\u001B[0m";
 			}
 			
@@ -233,7 +233,7 @@ class Card {
 		}
 		
 		//fix STRAIGHT_TO_ACE case
-		Table.sortCards(stats.bestHand);
+		Table.sortCards(player.stats.bestHand);
 		return string;
 	}
 	

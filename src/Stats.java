@@ -23,7 +23,6 @@ public class Stats {
 	}
 	
 	public double winningRate = -1.0;
-	public Player player;
 	public Ranking ranking;
 	public List<Card> bestHand;
 	public List<Card> rankingKickers = new ArrayList<>();
@@ -294,16 +293,15 @@ public class Stats {
 		}
 	}
 	
-	private void setStats(List<Card> commonCards, List<Card> hand) {
-		setPossibleHands((ArrayList) commonCards, hand);
+	public Stats(Table table, Player player) {
+		setPossibleHands((ArrayList) table.commonCards, player.hand);
 		setBestHand();
 		ranking = possibleBestHands.get(0).ranking;
 		rankingKickers = possibleBestHands.get(0).rankingKickers;
 	}
 	
-	public Stats(List<Card> commonCards, Player player) {
-		this.player = player;
-		setStats(commonCards, player.hand);
+	public Stats getStats() {
+		return this;
 	}
 	
 	public Stats() {
