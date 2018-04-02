@@ -1,6 +1,7 @@
 import java.util.*;
 
 public class Stats {
+	
 	public enum Ranking {
 		HIGH_CARD(0),
 		ONE_PAIR(1),
@@ -20,13 +21,11 @@ public class Stats {
 		}
 	}
 	
-	public Player player;
-	
-	public List<Card> bestHand;
-	public Ranking ranking;
-	public List<Card> rankingKickers = new ArrayList<>();
 	public double winningRate = -1.0;
-	
+	public Player player;
+	public Ranking ranking;
+	public List<Card> bestHand;
+	public List<Card> rankingKickers = new ArrayList<>();
 	public List<Stats> possibleBestHands = new ArrayList<>();
 	
 	private boolean isFlush(List<Card> hand) {
@@ -41,17 +40,10 @@ public class Stats {
 		return true;
 	}
 	
+	//TODO: straight to ace
 	private boolean isStraight(List<Card> hand) {
 		int rank = hand.get(0).rank.value;
 		for (int i = 0; i < 5; i++) {
-			//Ace as 1
-			if (hand.get(0).rank.value == 14 &&
-					hand.get(1).rank.value == 5 &&
-					hand.get(2).rank.value == 4 &&
-					hand.get(3).rank.value == 3 &&
-					hand.get(4).rank.value == 2) {
-				return true;
-			}
 			if (hand.get(i).rank.value != rank) {
 				return false;
 			}
@@ -136,14 +128,7 @@ public class Stats {
 		switch (candidate.ranking) {
 			case STRAIGHT_FLUSH:
 			case STRAIGHT:
-				//Ace as 1
-				if (candidate.bestHand.get(0).rank.value == 14 && candidate.bestHand.get(4).rank.value == 2) {
-					candidate.bestHand.get(0).rank.value = 1;
-					//add Ace
-					candidate.rankingKickers.add(candidate.bestHand.get(0));
-				} else {
-					candidate.rankingKickers.add(candidate.bestHand.get(4));
-				}
+				candidate.rankingKickers.add(candidate.bestHand.get(4));
 				break;
 			case FOUR_OF_A_KIND:
 				candidate.rankingKickers.add(candidate.bestHand.get(1));
@@ -204,11 +189,11 @@ public class Stats {
 			withBestRanking.add(possibleBestHands.get(i));
 			i++;
 		}
-		
-		//sorting all another
-		for (Stats stats : withBestRanking) {
-			Table.sortCards(stats.bestHand);
-		}
+
+//		//sorting all another
+//		for (Stats stats : withBestRanking) {
+//			Table.sortCards(stats.bestHand);
+//		}
 		
 		possibleBestHands = withBestRanking;
 	}
@@ -263,7 +248,7 @@ public class Stats {
 		bestHand = possibleBestHands.get(0).bestHand;
 	}
 	
-	private void setPossibleBestHands(ArrayList<Card> commonCards, List<Card> hand) {
+	private void setPossibleHands(ArrayList<Card> commonCards, List<Card> hand) {
 		//table hand only
 		Stats stats = new Stats();
 		stats.bestHand = commonCards;
@@ -321,7 +306,7 @@ public class Stats {
 	}
 	
 	private void setStats(List<Card> commonCards, List<Card> hand) {
-		setPossibleBestHands((ArrayList) commonCards, hand);
+		setPossibleHands((ArrayList) commonCards, hand);
 		setBestHand();
 		ranking = possibleBestHands.get(0).ranking;
 		rankingKickers = possibleBestHands.get(0).rankingKickers;

@@ -5,6 +5,7 @@ public class Calculator {
 	
 	private List<List<Card>> possibleDecks = new ArrayList<>();
 	public Table.State state = Table.State.PREFLOP;
+	public List<Stats> playersStats = new ArrayList<>();
 	
 	private void sortPlayersStats() {
 		//sort by ranking
@@ -130,8 +131,6 @@ public class Calculator {
 		}
 		return true;
 	}
-	
-	public List<Stats> playersStats = new ArrayList<>();
 	
 	public Calculator(Table table) {
 		state = table.state;

@@ -1,8 +1,8 @@
 import java.util.*;
 
 class Card {
+	
 	public enum Rank {
-		ONE(1),
 		TWO(2),
 		THREE(3),
 		FOUR(4),
@@ -42,8 +42,7 @@ class Card {
 	public boolean isTaken = false;
 	
 	public Card() {
-		//whole except ONE
-		rank = Rank.values()[1 + new Random().nextInt(Rank.values().length - 1)];
+		rank = Rank.values()[new Random().nextInt(Rank.values().length)];
 		suit = Suit.values()[new Random().nextInt(Suit.values().length)];
 
 //		System.out.println("New card is " + rank + " of " + suit);
@@ -101,7 +100,6 @@ class Card {
 			case KING:
 				rank = "K";
 				break;
-			case ONE:
 			case ACE:
 				rank = "A";
 				break;

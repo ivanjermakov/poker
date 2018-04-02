@@ -1,10 +1,13 @@
 import java.util.*;
 
 public class Table {
+	
+	private int playersAmount;
 	public List<Card> cardDeck = new ArrayList<>();
 	public List<Card> commonCards = new ArrayList<>();
 	public List<Player> players = new ArrayList<>();
-	private int playersAmount;
+	public State state = State.PREFLOP;
+	
 	
 	private void add(Card currentCard) {
 		for (Card card : cardDeck) {
@@ -14,15 +17,6 @@ public class Table {
 			}
 		}
 		cardDeck.add(currentCard);
-	}
-	
-	private boolean contains(Card currentCard) {
-		for (Card card : cardDeck) {
-			if (card == currentCard) {
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	private void setCardDeck() {
@@ -120,15 +114,13 @@ public class Table {
 		
 		return hand;
 	}
-	
 	public enum State {
 		PREFLOP,
 		FLOP,
 		TURN,
 		RIVER
-	}
 	
-	public State state = State.PREFLOP;
+	}
 	
 	public static void sortCards(List<Card> cards) {
 		boolean isSorted = false;
@@ -166,19 +158,19 @@ public class Table {
 		this.playersAmount = playersAmount;
 	}
 	
+	public void addPlayer(String name) {
+		Player player = new Player(name);
+		player.hand = getHand();
+		sortCards(player.hand);
+		players.add(player);
+	}
+	
 	public void newGame() {
 		setCardDeck();
 		
 		for (int i = 0; i < playersAmount; i++) {
 			addPlayer("Player " + Integer.toString(i + 1));
 		}
-	}
-	
-	public void addPlayer(String name) {
-		Player player = new Player(name);
-		player.hand = getHand();
-		sortCards(player.hand);
-		players.add(player);
 	}
 	
 	public void showPlayersHands() {
