@@ -2,8 +2,7 @@ import java.util.*;
 
 public class Table {
 	
-	private int playersAmount;
-	public List<Card> cardDeck = new ArrayList<>();
+	public List<Card> cardDeck;
 	public List<Card> commonCards = new ArrayList<>();
 	public List<Player> players = new ArrayList<>();
 	public State state = State.PREFLOP;
@@ -20,6 +19,8 @@ public class Table {
 	}
 	
 	private void setCardDeck() {
+		cardDeck = new ArrayList<>();
+		
 		while (cardDeck.size() != 52) {
 			Card card = new Card();
 			add(card);
@@ -114,12 +115,13 @@ public class Table {
 		
 		return hand;
 	}
+	
 	public enum State {
 		PREFLOP,
 		FLOP,
 		TURN,
 		RIVER
-	
+		
 	}
 	
 	public static void sortCards(List<Card> cards) {
@@ -148,29 +150,28 @@ public class Table {
 		
 	}
 	
-	public Table() {
-		setCardDeck();
-		setCommonCards();
-	}
-	
 	public Table(int playersAmount) {
 		if (playersAmount > 23) return;
-		this.playersAmount = playersAmount;
+		for (int i = 0; i < playersAmount; i++) {
+			addPlayer("Player " + Integer.toString(i + 1));
+		}
 	}
 	
 	public void addPlayer(String name) {
 		Player player = new Player(name);
-		player.hand = getHand();
-		sortCards(player.hand);
 		players.add(player);
+	}
+	
+	private void setHands() {
+		for (Player player : players) {
+			player.hand = getHand();
+			sortCards(player.hand);
+		}
 	}
 	
 	public void newGame() {
 		setCardDeck();
-		
-		for (int i = 0; i < playersAmount; i++) {
-			addPlayer("Player " + Integer.toString(i + 1));
-		}
+		setHands();
 	}
 	
 	public void showPlayersHands() {
@@ -194,7 +195,7 @@ public class Table {
 		}
 		System.out.println();
 		
-		Spy spy = new Spy(this);
+		new Spy(this);
 	}
 	
 	public void showFlop() {
@@ -208,7 +209,7 @@ public class Table {
 		}
 		System.out.println();
 		
-		Spy spy = new Spy(this);
+		new Spy(this);
 	}
 	
 	public void showTurn() {
@@ -219,8 +220,7 @@ public class Table {
 		System.out.print("Turn: " + Card.toShortString(cardDeck.get(3), true) + " ");
 		System.out.println();
 		
-		Spy spy = new Spy(this);
-		
+		new Spy(this);
 	}
 	
 	public void showRiver() {
@@ -231,7 +231,7 @@ public class Table {
 		System.out.print("River: " + Card.toShortString(cardDeck.get(4), true) + " ");
 		System.out.println();
 		
-		Spy spy = new Spy(this);
+		new Spy(this);
 	}
 	
 }

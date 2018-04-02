@@ -7,6 +7,21 @@ public class Calculator {
 	public Table.State state = Table.State.PREFLOP;
 	public List<Stats> playersStats = new ArrayList<>();
 	
+	private void sortByKickers() {
+		boolean isSorted = false;
+		while (!isSorted) {
+			isSorted = true;
+			
+			for (int i = 0; i < playersStats.size() - 1; i++) {
+				if (playersStats.get(i).ranking.value < playersStats.get(i + 1).ranking.value) {
+					isSorted = false;
+					Collections.swap(playersStats, i, i + 1);
+				}
+			}
+			
+		}
+	}
+	
 	private void sortPlayersStats() {
 		//sort by ranking
 		boolean isSorted = false;
@@ -29,7 +44,8 @@ public class Calculator {
 			
 			for (int i = 0; i < playersStats.size() - 1; i++) {
 				
-				if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking) {
+				if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
+						!playersStats.get(i).rankingKickers.isEmpty()) {
 					
 					if (playersStats.get(i).rankingKickers.get(0).rank.value <
 							playersStats.get(i + 1).rankingKickers.get(0).rank.value) {
@@ -51,6 +67,9 @@ public class Calculator {
 			}
 			
 		}
+		
+		//sort by kickers (with the same ranking kickers)
+		
 		
 	}
 	
@@ -105,8 +124,9 @@ public class Calculator {
 			}
 		}
 		
-		//divide rates (to one decimal)
-		double winnersRate = Math.round(1.0 / winnersStats.size() * 10.0) / 10.0;
+		//divide rates (to three decimal)
+		double winnersRate = 1.0 / winnersStats.size();
+		winnersRate = Math.round(winnersRate * 1000) / 1000d;
 		for (Stats winnerStats : winnersStats) {
 			winnerStats.winningRate = winnersRate;
 		}
@@ -178,7 +198,7 @@ public class Calculator {
 					playerStats.ranking + " " +
 					Card.toShortStrings(playerStats.rankingKickers, true) +
 					"with " + Card.toShortStrings(playerStats.bestHand, true) +
-					"(" + playerStats.winningRate * 100 + "%)");
+					"(" + playerStats.winningRate + ")");
 //				out.append(playerStats.player.name)
 //						.append(" has ")
 //						.append(String.valueOf(playerStats.ranking))

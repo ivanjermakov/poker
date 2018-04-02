@@ -7,12 +7,13 @@ public class Stats {
 		ONE_PAIR(1),
 		TWO_PAIR(2),
 		THREE_OF_A_KIND(3),
-		STRAIGHT(4),
-		FLUSH(5),
-		FULL_HOUSE(6),
-		FOUR_OF_A_KIND(7),
-		STRAIGHT_FLUSH(8),
-		ROYAL_FLUSH(9);
+		STRAIGHT_TO_ACE(4),
+		STRAIGHT(5),
+		FLUSH(6),
+		FULL_HOUSE(7),
+		FOUR_OF_A_KIND(8),
+		STRAIGHT_FLUSH(9),
+		ROYAL_FLUSH(10);
 		
 		public int value;
 		
@@ -26,6 +27,7 @@ public class Stats {
 	public Ranking ranking;
 	public List<Card> bestHand;
 	public List<Card> rankingKickers = new ArrayList<>();
+	public List<Card> kickers = new ArrayList<>();
 	public List<Stats> possibleBestHands = new ArrayList<>();
 	
 	private boolean isFlush(List<Card> hand) {
@@ -40,7 +42,14 @@ public class Stats {
 		return true;
 	}
 	
-	//TODO: straight to ace
+	private boolean isStraightToAce(List<Card> hand) {
+		return hand.get(0).rank == Card.Rank.ACE &&
+				hand.get(1).rank == Card.Rank.FIVE &&
+				hand.get(2).rank == Card.Rank.FOUR &&
+				hand.get(3).rank == Card.Rank.THREE &&
+				hand.get(4).rank == Card.Rank.TWO;
+	}
+	
 	private boolean isStraight(List<Card> hand) {
 		int rank = hand.get(0).rank.value;
 		for (int i = 0; i < 5; i++) {
@@ -84,7 +93,7 @@ public class Stats {
 	private Ranking getRanking(List<Card> hand) {
 		//sort
 		Table.sortCards(hand);
-		//STRAIGHT, FLUSH, STRAIGHT_FLUSH
+		//STRAIGHT_FLUSH
 		if (isFlush(hand) && isStraight(hand)) {
 			//ROYAL_FLUSH
 			if (hand.get(4).rank == Card.Rank.TEN) {
@@ -93,74 +102,78 @@ public class Stats {
 				return Ranking.STRAIGHT_FLUSH;
 			}
 		}
-		if (isFlush(hand)) {
-			return Ranking.FLUSH;
-		}
-		if (isStraight(hand)) {
-			return Ranking.STRAIGHT;
-		}
-		//FOUR_OF_A_KIND
-		if (isFourOfAKind(hand)) {
-			return Ranking.FOUR_OF_A_KIND;
-		}
-		//FULL_HOUSE
-		if (isFullHouse(hand)) {
-			return Ranking.FULL_HOUSE;
-		}
-		//THREE_OF_A_KIND
-		if (isThreeOfAKind(hand)) {
-			return Ranking.THREE_OF_A_KIND;
-		}
-		//TWO_PAIR
-		if (isTwoPair(hand)) {
-			return Ranking.TWO_PAIR;
-		}
-		//ONE_PAIR
-		if (isOnePair(hand)) {
-			return Ranking.ONE_PAIR;
-		}
+		if (isFlush(hand)) return Ranking.FLUSH;
+		if (isStraightToAce(hand)) return Ranking.STRAIGHT_TO_ACE;
+		if (isStraight(hand)) return Ranking.STRAIGHT;
+		if (isFourOfAKind(hand)) return Ranking.FOUR_OF_A_KIND;
+		if (isFullHouse(hand)) return Ranking.FULL_HOUSE;
+		if (isThreeOfAKind(hand)) return Ranking.THREE_OF_A_KIND;
+		if (isTwoPair(hand)) return Ranking.TWO_PAIR;
+		if (isOnePair(hand)) return Ranking.ONE_PAIR;
 		
-		//HIGH_CARD
 		return Ranking.HIGH_CARD;
 	}
 	
 	private List<Card> getRankingKickers(Stats candidate) {
+		List<Card> rankingKickers = new ArrayList<>();
 		switch (candidate.ranking) {
 			case STRAIGHT_FLUSH:
 			case STRAIGHT:
-				candidate.rankingKickers.add(candidate.bestHand.get(4));
+				rankingKickers.add(candidate.bestHand.get(4));
 				break;
 			case FOUR_OF_A_KIND:
-				candidate.rankingKickers.add(candidate.bestHand.get(1));
+				rankingKickers.add(candidate.bestHand.get(1));
 				break;
 			case FULL_HOUSE:
-				candidate.rankingKickers.add(candidate.bestHand.get(2));
-				if (candidate.bestHand.get(0).rank == candidate.bestHand.get(2).rank) {
-					candidate.rankingKickers.add(candidate.bestHand.get(4));
-				} else {
-					candidate.rankingKickers.add(candidate.bestHand.get(0));
-				}
+				rankingKickers.add(candidate.bestHand.get(0));
+				rankingKickers.add(candidate.bestHand.get(4));
 				break;
 			case THREE_OF_A_KIND:
-				candidate.rankingKickers.add(candidate.bestHand.get(2));
+				rankingKickers.add(candidate.bestHand.get(2));
 				break;
 			case TWO_PAIR:
-				candidate.rankingKickers.add(candidate.bestHand.get(1));
-				candidate.rankingKickers.add(candidate.bestHand.get(4));
+				rankingKickers.add(candidate.bestHand.get(1));
+				rankingKickers.add(candidate.bestHand.get(3));
 				break;
 			case ONE_PAIR:
 				for (int i = 0; i < 4; i++) {
 					if (candidate.bestHand.get(i).rank.value == candidate.bestHand.get(i + 1).rank.value) {
-						candidate.rankingKickers.add(candidate.bestHand.get(i));
+						rankingKickers.add(candidate.bestHand.get(i));
 						break;
 					}
 				}
 				break;
-			default:
-				candidate.rankingKickers.add(candidate.bestHand.get(0));
 		}
 		
-		return candidate.rankingKickers;
+		return rankingKickers;
+	}
+	
+	private List<Card> getKickers(Stats candidate) {
+		List<Card> kickers = new ArrayList<>();
+		//rankings without kickers
+		if (candidate.ranking == Ranking.ROYAL_FLUSH ||
+				candidate.ranking == Ranking.STRAIGHT_FLUSH ||
+				candidate.ranking == Ranking.STRAIGHT ||
+				candidate.ranking == Ranking.STRAIGHT_TO_ACE ||
+				candidate.ranking == Ranking.FLUSH ||
+				candidate.ranking == Ranking.HIGH_CARD ||
+				candidate.ranking == Ranking.FULL_HOUSE) return kickers;
+		
+		for (Card card : candidate.bestHand) {
+			//first kicker
+			if (!candidate.rankingKickers.isEmpty() &&
+					card.rank != candidate.rankingKickers.get(0).rank) {
+				//second kicker
+				if (candidate.rankingKickers.size() == 2 &&
+						card.rank != candidate.rankingKickers.get(1).rank) {
+					kickers.add(card);
+				} else {
+					kickers.add(card);
+				}
+			}
+		}
+		
+		return kickers;
 	}
 	
 	private void setWithBestRanking() {
