@@ -2,11 +2,126 @@ import java.util.*;
 
 public class Table {
 	
+	public enum State {
+		PREFLOP,
+		FLOP,
+		TURN,
+		RIVER
+		
+	}
+	
 	public List<Card> cardDeck;
+	
 	public List<Card> commonCards = new ArrayList<>();
+	
 	public List<Player> players = new ArrayList<>();
+	
 	public State state = State.PREFLOP;
 	
+	
+	public static void sortCards(List<Card> cards) {
+		boolean isSorted = false;
+		
+		while (!isSorted) {
+			isSorted = true;
+			
+			for (int i = 0; i < cards.size() - 1; i++) {
+				if (cards.get(i).rank.value < cards.get(i + 1).rank.value) {
+					isSorted = false;
+					Collections.swap(cards, i, i + 1);
+				}
+			}
+			
+			for (int i = 0; i < cards.size() - 1; i++) {
+				if (cards.get(i).rank == cards.get(i + 1).rank) {
+					if (cards.get(i).suit.value < cards.get(i + 1).suit.value) {
+						isSorted = false;
+						Collections.swap(cards, i, i + 1);
+					}
+				}
+			}
+			
+		}
+		
+	}
+	
+	public Table(int playersAmount) {
+		if (playersAmount > 23) return;
+		for (int i = 0; i < playersAmount; i++) {
+			addPlayer("Player " + Integer.toString(i + 1));
+		}
+	}
+	
+	public void addPlayer(String name) {
+		Player player = new Player(name);
+		players.add(player);
+	}
+	
+	public void newGame() {
+		System.out.println("---------------- New game ----------------");
+		setCardDeck();
+		setHands();
+	}
+	
+	public void showPlayersHands() {
+		if (players.size() > 23) return;
+		for (int i = 0; i < players.size(); i++) {
+			System.out.print("Player " + (i + 1) + ": ");
+			players.get(i).printHand();
+			System.out.println();
+		}
+	}
+	
+	public void showCommonCards() {
+		setCommonCards();
+		sortCards(commonCards);
+		
+		state = State.RIVER;
+		System.out.print("Common cards: ");
+		for (Card handCard : commonCards) {
+			handCard.isTaken = true;
+			System.out.print(Card.toShortString(handCard, true) + " ");
+		}
+		System.out.println();
+		
+		new Spy(this);
+	}
+	
+	public void showFlop() {
+		setFlop();
+		sortCards(commonCards);
+		if (players.isEmpty()) return;
+		state = State.FLOP;
+		System.out.print("Flop: ");
+		for (int i = 0; i < 3; i++) {
+			System.out.print(Card.toShortString(cardDeck.get(i), true) + " ");
+		}
+		System.out.println();
+		
+		new Spy(this);
+	}
+	
+	public void showTurn() {
+		setTurn();
+		sortCards(commonCards);
+		if (players.isEmpty()) return;
+		state = State.TURN;
+		System.out.print("Turn: " + Card.toShortString(cardDeck.get(3), true) + " ");
+		System.out.println();
+		
+		new Spy(this);
+	}
+	
+	public void showRiver() {
+		setRiver();
+		sortCards(commonCards);
+		if (players.isEmpty()) return;
+		state = State.RIVER;
+		System.out.print("River: " + Card.toShortString(cardDeck.get(4), true) + " ");
+		System.out.println();
+		
+		new Spy(this);
+	}
 	
 	private void add(Card currentCard) {
 		for (Card card : cardDeck) {
@@ -24,6 +139,13 @@ public class Table {
 		while (cardDeck.size() != 52) {
 			Card card = new Card();
 			add(card);
+		}
+	}
+	
+	private void setHands() {
+		for (Player player : players) {
+			player.hand = getHand();
+			sortCards(player.hand);
 		}
 	}
 	
@@ -114,125 +236,6 @@ public class Table {
 		}
 		
 		return hand;
-	}
-	
-	public enum State {
-		PREFLOP,
-		FLOP,
-		TURN,
-		RIVER
-		
-	}
-	
-	public static void sortCards(List<Card> cards) {
-		boolean isSorted = false;
-		
-		while (!isSorted) {
-			isSorted = true;
-			
-			for (int i = 0; i < cards.size() - 1; i++) {
-				if (cards.get(i).rank.value < cards.get(i + 1).rank.value) {
-					isSorted = false;
-					Collections.swap(cards, i, i + 1);
-				}
-			}
-			
-			for (int i = 0; i < cards.size() - 1; i++) {
-				if (cards.get(i).rank == cards.get(i + 1).rank) {
-					if (cards.get(i).suit.value < cards.get(i + 1).suit.value) {
-						isSorted = false;
-						Collections.swap(cards, i, i + 1);
-					}
-				}
-			}
-			
-		}
-		
-	}
-	
-	public Table(int playersAmount) {
-		if (playersAmount > 23) return;
-		for (int i = 0; i < playersAmount; i++) {
-			addPlayer("Player " + Integer.toString(i + 1));
-		}
-	}
-	
-	public void addPlayer(String name) {
-		Player player = new Player(name);
-		players.add(player);
-	}
-	
-	private void setHands() {
-		for (Player player : players) {
-			player.hand = getHand();
-			sortCards(player.hand);
-		}
-	}
-	
-	public void newGame() {
-		System.out.println("---------------- New game ----------------");
-		setCardDeck();
-		setHands();
-	}
-	
-	public void showPlayersHands() {
-		if (players.size() > 23) return;
-		for (int i = 0; i < players.size(); i++) {
-			System.out.print("Player " + (i + 1) + ": ");
-			players.get(i).printHand();
-			System.out.println();
-		}
-	}
-	
-	public void showCommonCards() {
-		setCommonCards();
-		sortCards(commonCards);
-		
-		state = State.RIVER;
-		System.out.print("Common cards: ");
-		for (Card handCard : commonCards) {
-			handCard.isTaken = true;
-			System.out.print(Card.toShortString(handCard, true) + " ");
-		}
-		System.out.println();
-		
-		new Spy(this);
-	}
-	
-	public void showFlop() {
-		setFlop();
-		sortCards(commonCards);
-		if (players.isEmpty()) return;
-		state = State.FLOP;
-		System.out.print("Flop: ");
-		for (int i = 0; i < 3; i++) {
-			System.out.print(Card.toShortString(cardDeck.get(i), true) + " ");
-		}
-		System.out.println();
-		
-		new Spy(this);
-	}
-	
-	public void showTurn() {
-		setTurn();
-		sortCards(commonCards);
-		if (players.isEmpty()) return;
-		state = State.TURN;
-		System.out.print("Turn: " + Card.toShortString(cardDeck.get(3), true) + " ");
-		System.out.println();
-		
-		new Spy(this);
-	}
-	
-	public void showRiver() {
-		setRiver();
-		sortCards(commonCards);
-		if (players.isEmpty()) return;
-		state = State.RIVER;
-		System.out.print("River: " + Card.toShortString(cardDeck.get(4), true) + " ");
-		System.out.println();
-		
-		new Spy(this);
 	}
 	
 }

@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.List;
+import java.util.Random;
 
 class Card {
 	
@@ -38,7 +39,10 @@ class Card {
 	}
 	
 	public Rank rank;
+	
 	public Suit suit;
+	
+	//TODO: get rid of isTaken instantly removing cards from deck
 	public boolean isTaken = false;
 	
 	public Card() {

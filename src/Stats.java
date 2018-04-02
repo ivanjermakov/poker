@@ -1,4 +1,6 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Stats {
 	
@@ -22,12 +24,32 @@ public class Stats {
 		}
 	}
 	
-	public double winningRate = -1.0;
-	public Ranking ranking;
 	public List<Card> bestHand;
+	
+	private List<Card> kickers = new ArrayList<>();
+	
 	public List<Card> rankingKickers = new ArrayList<>();
-	public List<Card> kickers = new ArrayList<>();
-	public List<Stats> possibleBestHands = new ArrayList<>();
+	
+	private List<Stats> possibleBestHands = new ArrayList<>();
+	
+	public Ranking ranking;
+	
+	public double winningRate = -1.0;
+	
+	
+	public Stats(Table table, Player player) {
+		setPossibleHands((ArrayList) table.commonCards, player.hand);
+		setBestHand();
+		ranking = possibleBestHands.get(0).ranking;
+		rankingKickers = possibleBestHands.get(0).rankingKickers;
+	}
+	
+	public Stats() {
+	}
+	
+	public Stats getStats() {
+		return this;
+	}
 	
 	private boolean isFlush(List<Card> hand) {
 		//check whether all suits same as first card
@@ -291,20 +313,6 @@ public class Stats {
 				possibleBestHands.add(stats);
 			}
 		}
-	}
-	
-	public Stats(Table table, Player player) {
-		setPossibleHands((ArrayList) table.commonCards, player.hand);
-		setBestHand();
-		ranking = possibleBestHands.get(0).ranking;
-		rankingKickers = possibleBestHands.get(0).rankingKickers;
-	}
-	
-	public Stats getStats() {
-		return this;
-	}
-	
-	public Stats() {
 	}
 	
 }
