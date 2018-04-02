@@ -149,7 +149,7 @@ class Card {
 	public static String toShortStrings(Stats stats, boolean colored) {
 		//swap for draw and then sort to fix
 		if (stats.ranking == Stats.Ranking.STRAIGHT_TO_ACE) {
-			Collections.swap(stats.bestHand, 0, 4);
+			stats.bestHand.add(stats.bestHand.remove(0));
 		}
 		String string = "";
 		for (Card card : stats.bestHand) {
