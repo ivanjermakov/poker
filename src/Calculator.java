@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Calculator {
 	
@@ -8,18 +7,50 @@ public class Calculator {
 	public List<Stats> playersStats = new ArrayList<>();
 	
 	private void sortByKickers() {
+		if (playersStats.size() == 1) return;
+		
 		boolean isSorted = false;
+		
 		while (!isSorted) {
-			isSorted = true;
-			
 			for (int i = 0; i < playersStats.size() - 1; i++) {
-				if (playersStats.get(i).ranking.value < playersStats.get(i + 1).ranking.value) {
-					isSorted = false;
-					Collections.swap(playersStats, i, i + 1);
+				isSorted = true;
+				//same ranking kickers
+				//first kicker is the same
+				//first col
+				if (playersStats.get(i).rankingKickers.size() >= 1 && playersStats.get(i + 1).rankingKickers.size() >= 1) {
+					if (playersStats.get(i).rankingKickers.get(0).rank == playersStats.get(i + 1).rankingKickers.get(0).rank) {
+						//second kicker is present and the same
+						if (playersStats.get(i).rankingKickers.size() == 2 && playersStats.get(i + 1).rankingKickers.size() == 2) {
+							if (playersStats.get(i).rankingKickers.get(0).rank == playersStats.get(i + 1).rankingKickers.get(0).rank) {
+								if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
+										playersStats.get(i).bestHand.get(0).rank.value < playersStats.get(i + 1).bestHand.get(0).rank.value) {
+									isSorted = false;
+									Collections.swap(playersStats, i, i + 1);
+									break;
+								}
+							}
+						} else {
+							if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
+									playersStats.get(i).bestHand.get(0).rank.value < playersStats.get(i + 1).bestHand.get(0).rank.value) {
+								isSorted = false;
+								Collections.swap(playersStats, i, i + 1);
+								break;
+							}
+						}
+					}
+					//no ranking kickers
+				} else {
+					if (playersStats.get(i).ranking == playersStats.get(i + 1).ranking &&
+							playersStats.get(i).bestHand.get(0).rank.value < playersStats.get(i + 1).bestHand.get(0).rank.value) {
+						isSorted = false;
+						Collections.swap(playersStats, i, i + 1);
+						break;
+					}
 				}
+				
 			}
-			
 		}
+
 	}
 	
 	private void sortPlayersStats() {
@@ -69,8 +100,7 @@ public class Calculator {
 		}
 		
 		//sort by kickers (with the same ranking kickers)
-		
-		
+		sortByKickers();
 	}
 	
 	private List<Card> getContainedCards(List<Card> cards) {
@@ -119,7 +149,7 @@ public class Calculator {
 		List<Stats> winnersStats = new ArrayList<>();
 		for (Stats playerStats : playersStats) {
 			if (playerStats.ranking == winningStats.ranking &&
-					isSameKickersRank(playerStats.rankingKickers, winningStats.rankingKickers)) {
+					isSameHandsRanks(playerStats.rankingKickers, winningStats.rankingKickers)) {
 				winnersStats.add(playerStats);
 			}
 		}
@@ -140,7 +170,7 @@ public class Calculator {
 		}
 	}
 	
-	private static boolean isSameKickersRank(List<Card> hand1, List<Card> hand2) {
+	private static boolean isSameHandsRanks(List<Card> hand1, List<Card> hand2) {
 		if (hand1.isEmpty() && hand2.isEmpty()) return true;
 		if (hand1.size() == hand2.size()) {
 			for (int i = 0; i < hand1.size(); i++) {
@@ -194,11 +224,13 @@ public class Calculator {
 //			PrintWriter out = new PrintWriter("output.txt", "utf-8");
 		
 		for (Stats playerStats : playersStats) {
-			System.out.println(playerStats.player.name + " has " +
-					playerStats.ranking + " " +
-					Card.toShortStrings(playerStats.rankingKickers, true) +
-					"with " + Card.toShortStrings(playerStats.bestHand, true) +
-					"(" + playerStats.winningRate + ")");
+			System.out.println(
+					Card.toShortStrings(playerStats.bestHand, true) + " " +
+							playerStats.player.name + " has " +
+							playerStats.ranking + " " +
+							Card.toShortStrings(playerStats.rankingKickers, true) +
+							"(" + playerStats.winningRate + ")"
+			);
 //				out.append(playerStats.player.name)
 //						.append(" has ")
 //						.append(String.valueOf(playerStats.ranking))
