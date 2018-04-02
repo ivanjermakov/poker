@@ -216,15 +216,17 @@ public class Calculator {
 		sortPlayersStats();
 	}
 	
-	public void getStats() {
+	public void showStats() {
 		for (Stats playerStats : playersStats) {
 			System.out.println(
 					Card.toShortStrings(playerStats, true) + " " +
 							playerStats.player.name + " has " +
 							playerStats.ranking + " " +
 							Card.toShortStrings(playerStats.rankingKickers, true) +
-							"(" + playerStats.winningRate + ")"
+							//format rate as ##.#%
+							"(" + Math.round((playerStats.winningRate * 100) * 1000) / 1000d + "%)"
 			);
 		}
 	}
+	
 }

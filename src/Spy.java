@@ -7,7 +7,7 @@ class Spy {
 			case RIVER:
 				calculator.calculateStats();
 				calculator.calculateWinningRates(table);
-				calculator.getStats();
+				calculator.showStats();
 				break;
 			case FLOP:
 			case TURN:
