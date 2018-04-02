@@ -146,8 +146,11 @@ class Card {
 		return string.toString();
 	}
 	
-	//TODO: redraw straight to ace
 	public static String toShortStrings(Stats stats, boolean colored) {
+		//swap for draw and then sort to fix
+		if (stats.ranking == Stats.Ranking.STRAIGHT_TO_ACE) {
+			Collections.swap(stats.bestHand, 0, 4);
+		}
 		String string = "";
 		for (Card card : stats.bestHand) {
 			String rank;
@@ -229,6 +232,8 @@ class Card {
 			string += rank + suit + " ";
 		}
 		
+		//fix STRAIGHT_TO_ACE case
+		Table.sortCards(stats.bestHand);
 		return string;
 	}
 	

@@ -170,6 +170,7 @@ public class Table {
 	}
 	
 	public void newGame() {
+		System.out.println("- - - - New game - - - -");
 		setCardDeck();
 		setHands();
 	}
