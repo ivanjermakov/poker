@@ -102,19 +102,6 @@ public class Calculator {
 		sortByKickers();
 	}
 	
-	private List<Card> getContainedCards(List<Card> cards) {
-		List<Card> containedCards = new ArrayList<>();
-		
-		for (Card card : cards) {
-			if (!card.isTaken) {
-				Card newCard = new Card(card);
-				containedCards.add(newCard);
-			}
-		}
-		
-		return containedCards;
-	}
-	
 	private void setPossibleFlopDecks(List<Card> flop, List<Card> cards) {
 		for (int i = 0; i < cards.size() - 1; i++) {
 			for (int j = i + 1; j < cards.size(); j++) {
@@ -191,10 +178,10 @@ public class Calculator {
 				}
 				break;
 			case TURN:
-				setPossibleTurnDecks(table.commonCards, getContainedCards(table.cardDeck));
+				setPossibleTurnDecks(table.commonCards, table.cardDeck);
 				break;
 			case FLOP:
-				setPossibleFlopDecks(table.commonCards, getContainedCards(table.cardDeck));
+				setPossibleFlopDecks(table.commonCards, table.cardDeck);
 				break;
 		}
 	}

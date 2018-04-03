@@ -43,7 +43,7 @@ class Card {
 	public Suit suit;
 	
 	//TODO: get rid of isTaken instantly removing cards from deck
-	public boolean isTaken = false;
+//	public boolean isTaken = false;
 	
 	public Card() {
 		rank = Rank.values()[new Random().nextInt(Rank.values().length)];
@@ -62,7 +62,6 @@ class Card {
 	public Card(Card card) {
 		this.rank = card.rank;
 		this.suit = card.suit;
-		this.isTaken = card.isTaken;
 	}
 	
 	public static String toShortString(Card card, boolean colored) {
