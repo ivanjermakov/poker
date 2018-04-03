@@ -26,9 +26,9 @@ public class Stats {
 	
 	public List<Card> bestHand;
 	
-	private List<Card> kickers = new ArrayList<>();
+	private List<Card> kickers;
 	
-	public List<Card> rankingKickers = new ArrayList<>();
+	public List<Card> rankingKickers;
 	
 	private List<Stats> possibleBestHands = new ArrayList<>();
 	
@@ -141,7 +141,7 @@ public class Stats {
 		return Ranking.HIGH_CARD;
 	}
 	
-	private List<Card> getRankingKickers(Stats candidate) {
+	private List getRankingKickers(Stats candidate) {
 		List<Card> rankingKickers = new ArrayList<>();
 		switch (candidate.ranking) {
 			case STRAIGHT_FLUSH:
@@ -175,7 +175,7 @@ public class Stats {
 		return rankingKickers;
 	}
 	
-	private List<Card> getKickers(Stats candidate) {
+	private List getKickers(Stats candidate) {
 		List<Card> kickers = new ArrayList<>();
 		//rankings without kickers
 		if (candidate.ranking == Ranking.ROYAL_FLUSH ||

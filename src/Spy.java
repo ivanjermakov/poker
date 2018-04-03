@@ -4,18 +4,21 @@ class Spy {
 		Calculator calculator = new Calculator(table);
 		
 		if (table.players.isEmpty()) return;
+		
 		switch (calculator.state) {
 			case RIVER:
 				calculator.sortPlayersStats();
-				calculator.calculateWinningRates(table);
+				calculator.calculateWinningRates();
+				calculator.sortPlayersStats();
 				calculator.showStats();
 				break;
 			case FLOP:
 			case TURN:
-				calculator.calculateWinningRates(table);
+				calculator.calculateRates(table);
 				calculator.showRates();
 				break;
 		}
+		
 	}
 	
 }

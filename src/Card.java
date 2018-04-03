@@ -42,26 +42,9 @@ class Card {
 	
 	public Suit suit;
 	
-	//TODO: get rid of isTaken instantly removing cards from deck
-//	public boolean isTaken = false;
-	
 	public Card() {
 		rank = Rank.values()[new Random().nextInt(Rank.values().length)];
 		suit = Suit.values()[new Random().nextInt(Suit.values().length)];
-
-//		System.out.println("New card is " + rank + " of " + suit);
-	}
-	
-	public Card(Rank rank, Suit suit) {
-		this.rank = rank;
-		this.suit = suit;
-
-//		System.out.println("New card is " + rank + " of " + suit);
-	}
-	
-	public Card(Card card) {
-		this.rank = card.rank;
-		this.suit = card.suit;
 	}
 	
 	public static String toShortString(Card card, boolean colored) {
@@ -140,12 +123,12 @@ class Card {
 	}
 	
 	public static String toShortStrings(List<Card> cards, boolean colored) {
-		
 		StringBuilder string = new StringBuilder();
 		
 		for (Card card : cards) {
 			string.append(Card.toShortString(card, colored)).append(" ");
 		}
+		
 		return string.toString();
 	}
 	

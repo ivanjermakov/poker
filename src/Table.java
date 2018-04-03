@@ -7,12 +7,11 @@ public class Table {
 		FLOP,
 		TURN,
 		RIVER
-		
 	}
 	
 	public List<Card> cardDeck;
 	
-	public List<Card> commonCards = new ArrayList<>();
+	public List<Card> commonCards;
 	
 	public List<Player> players = new ArrayList<>();
 	
@@ -147,7 +146,7 @@ public class Table {
 	}
 	
 	private void setCommonCards() {
-		List<Card> newCommonCards = new ArrayList<>();
+		List newCommonCards = new ArrayList<>();
 		
 		for (int i = 0; i < 5; i++) {
 			newCommonCards.add(cardDeck.get(0));
@@ -159,7 +158,7 @@ public class Table {
 	
 	private void setFlop() {
 		if (!commonCards.isEmpty()) return;
-		List<Card> flop = new ArrayList<>();
+		List flop = new ArrayList<>();
 		
 		for (int i = 0; i < 3; i++) {
 			flop.add(cardDeck.get(0));
@@ -171,7 +170,7 @@ public class Table {
 	
 	private void setTurn() {
 		if (commonCards.size() != 3) return;
-		Card card = null;
+		Card card;
 		
 		card = cardDeck.get(0);
 		cardDeck.remove(cardDeck.get(0));
@@ -181,7 +180,7 @@ public class Table {
 	
 	private void setRiver() {
 		if (commonCards.size() != 4) return;
-		Card card = null;
+		Card card;
 		
 		card = cardDeck.get(0);
 		cardDeck.remove(cardDeck.get(0));
@@ -189,8 +188,8 @@ public class Table {
 		commonCards.add(card);
 	}
 	
-	private List<Card> getHand() {
-		List<Card> hand = new ArrayList<>();
+	private List getHand() {
+		List hand = new ArrayList<>();
 		
 		while (hand.size() != 2) {
 			hand.add(cardDeck.get(0));

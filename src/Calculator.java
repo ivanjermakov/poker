@@ -4,14 +4,15 @@ import java.util.List;
 
 public class Calculator {
 	
-	private List<List<Card>> possibleCommonCards = new ArrayList<>();
-	public Table.State state = Table.State.PREFLOP;
+	public Table.State state;
+	
 	public List<Player> players = new ArrayList<>();
+	
+	private List<List<Card>> possibleCommonCards = new ArrayList<>();
 	
 	
 	public Calculator(Table table) {
 		state = table.state;
-		
 		
 		switch (state) {
 			case FLOP:
@@ -31,20 +32,6 @@ public class Calculator {
 		}
 	}
 	
-	public void calculateWinningRates(Table table) {
-		switch (state) {
-			case FLOP:
-			case TURN:
-				calculateRates(table);
-				break;
-			case RIVER:
-				calculateWinningRates();
-				sortPlayersStats();
-				break;
-			default:
-		}
-	}
-	
 	public void showStats() {
 		for (Player player : players) {
 			System.out.println(
@@ -58,6 +45,7 @@ public class Calculator {
 		}
 	}
 	
+	//TODO: show outs if percentage is lower than 20%
 	public void showRates() {
 		for (Player player : players) {
 			System.out.println(
@@ -66,6 +54,115 @@ public class Calculator {
 							//format rate as ##.#%
 							" (" + Math.round((player.stats.winningRate * 100) * 1000) / 1000d + "%)"
 			);
+		}
+	}
+	
+	public void sortPlayersStats() {
+		//sort by ranking
+		boolean isSorted = false;
+		while (!isSorted) {
+			isSorted = true;
+			
+			for (int i = 0; i < players.size() - 1; i++) {
+				if (players.get(i).stats.ranking.value < players.get(i + 1).stats.ranking.value) {
+					isSorted = false;
+					Collections.swap(players, i, i + 1);
+				}
+			}
+			
+		}
+		
+		//sort by ranking kickers
+		isSorted = false;
+		while (!isSorted) {
+			isSorted = true;
+			
+			for (int i = 0; i < players.size() - 1; i++) {
+				
+				if (players.get(i).stats.ranking == players.get(i + 1).stats.ranking &&
+						!players.get(i).stats.rankingKickers.isEmpty()) {
+					if (players.get(i).stats.rankingKickers.get(0).rank.value <
+							players.get(i + 1).stats.rankingKickers.get(0).rank.value) {
+						isSorted = false;
+						Collections.swap(players, i, i + 1);
+					} else if (players.get(i).stats.rankingKickers.get(0).rank ==
+							players.get(i + 1).stats.rankingKickers.get(0).rank) {
+						if (players.get(i).stats.rankingKickers.size() == 2 &&
+								players.get(i + 1).stats.rankingKickers.size() == 2) {
+							if (players.get(i).stats.rankingKickers.get(1).rank.value <
+									players.get(i + 1).stats.rankingKickers.get(1).rank.value) {
+								isSorted = false;
+								Collections.swap(players, i, i + 1);
+							}
+						}
+					}
+				}
+				
+			}
+			
+		}
+		
+		//sort by kickers (with the same ranking kickers)
+		sortByKickers();
+	}
+	
+	public void calculateRates(Table table) {
+		players = new ArrayList<>(table.players);
+		int summaryRate = 0;
+		
+		for (List commonCards : possibleCommonCards) {
+			//each point is 100% of game on current common cards
+			summaryRate++;
+			
+			for (Player player : players) {
+				//set current possible common cards as table common cards
+				player.setStats(table, commonCards);
+			}
+			
+			sortPlayersStats();
+			calculateWinningRates();
+			
+			for (Player player : players) {
+				player.summaryRate += player.stats.winningRate;
+			}
+			
+		}
+		
+		//convert summaryRate into rates
+		for (Player player : players) {
+			player.stats.winningRate = player.summaryRate / summaryRate;
+			//reset summaryRate
+			player.summaryRate = 0;
+		}
+		
+		sortByWinningRate();
+	}
+	
+	public void calculateWinningRates() {
+		//all the winners should have hand as player at [0]
+		Player winningStats = players.get(0);
+		
+		//all the winners would divide rate
+		List<Player> winnersStats = new ArrayList<>();
+		for (Player playerStats : players) {
+			if (playerStats.stats.ranking == winningStats.stats.ranking &&
+					isSameHandsRanks(playerStats.stats.rankingKickers, winningStats.stats.rankingKickers)) {
+				winnersStats.add(playerStats);
+			}
+		}
+		
+		//divide rates between winners
+		double winnersRate = 1.0 / winnersStats.size();
+		for (Player winnerStats : winnersStats) {
+			winnerStats.stats.winningRate = winnersRate;
+		}
+		
+		//all losers rates = 0
+		for (Player playerStats : players) {
+			//he's not winner
+			if (playerStats.stats.winningRate == -1.0) {
+				playerStats.stats.winningRate = 0.0;
+			}
 		}
 	}
 	
@@ -93,15 +190,21 @@ public class Calculator {
 				//first kicker is the same
 				//first col
 				if (players.get(i).stats.ranking == players.get(i + 1).stats.ranking &&
-						players.get(i).stats.bestHand.get(0).rank.value < players.get(i + 1).stats.bestHand.get(0).rank.value) {
+						players.get(i).stats.bestHand.get(0).rank.value <
+								players.get(i + 1).stats.bestHand.get(0).rank.value) {
 					//has ranking kickers
-					if (players.get(i).stats.rankingKickers.size() >= 1 && players.get(i + 1).stats.rankingKickers.size() >= 1) {
-						if (players.get(i).stats.rankingKickers.get(0).rank == players.get(i + 1).stats.rankingKickers.get(0).rank) {
+					if (players.get(i).stats.rankingKickers.size() >= 1 &&
+							players.get(i + 1).stats.rankingKickers.size() >= 1) {
+						if (players.get(i).stats.rankingKickers.get(0).rank ==
+								players.get(i + 1).stats.rankingKickers.get(0).rank) {
 							//second ranking kicker is present and the same
-							if (players.get(i).stats.rankingKickers.size() == 2 && players.get(i + 1).stats.rankingKickers.size() == 2) {
-								if (players.get(i).stats.rankingKickers.get(0).rank == players.get(i + 1).stats.rankingKickers.get(0).rank &&
+							if (players.get(i).stats.rankingKickers.size() == 2 &&
+									players.get(i + 1).stats.rankingKickers.size() == 2) {
+								if (players.get(i).stats.rankingKickers.get(0).rank ==
+										players.get(i + 1).stats.rankingKickers.get(0).rank &&
 										players.get(i).stats.ranking == players.get(i + 1).stats.ranking &&
-										players.get(i).stats.bestHand.get(0).rank.value < players.get(i + 1).stats.bestHand.get(0).rank.value) {
+										players.get(i).stats.bestHand.get(0).rank.value <
+												players.get(i + 1).stats.bestHand.get(0).rank.value) {
 									isSorted = false;
 									Collections.swap(players, i, i + 1);
 									break;
@@ -123,56 +226,6 @@ public class Calculator {
 			}
 		}
 		
-	}
-	
-	public void sortPlayersStats() {
-		//sort by ranking
-		boolean isSorted = false;
-		while (!isSorted) {
-			isSorted = true;
-			
-			for (int i = 0; i < players.size() - 1; i++) {
-				if (players.get(i).stats.ranking.value < players.get(i + 1).stats.ranking.value) {
-					isSorted = false;
-					Collections.swap(players, i, i + 1);
-				}
-			}
-			
-		}
-		
-		//sort by ranking kickers
-		isSorted = false;
-		while (!isSorted) {
-			isSorted = true;
-			
-			for (int i = 0; i < players.size() - 1; i++) {
-				
-				if (players.get(i).stats.ranking == players.get(i + 1).stats.ranking &&
-						!players.get(i).stats.rankingKickers.isEmpty()) {
-					
-					if (players.get(i).stats.rankingKickers.get(0).rank.value <
-							players.get(i + 1).stats.rankingKickers.get(0).rank.value) {
-						isSorted = false;
-						Collections.swap(players, i, i + 1);
-					} else if (players.get(i).stats.rankingKickers.get(0).rank ==
-							players.get(i + 1).stats.rankingKickers.get(0).rank) {
-						if (players.get(i).stats.rankingKickers.size() == 2 &&
-								players.get(i + 1).stats.rankingKickers.size() == 2) {
-							if (players.get(i).stats.rankingKickers.get(1).rank.value <
-									players.get(i + 1).stats.rankingKickers.get(1).rank.value) {
-								isSorted = false;
-								Collections.swap(players, i, i + 1);
-							}
-						}
-					}
-				}
-				
-			}
-			
-		}
-		
-		//sort by kickers (with the same ranking kickers)
-		sortByKickers();
 	}
 	
 	private void sortByWinningRate() {
@@ -206,73 +259,6 @@ public class Calculator {
 			List<Card> possibleDeck = new ArrayList<>(turn);
 			possibleDeck.add(cards.get(i));
 			possibleCommonCards.add(possibleDeck);
-		}
-	}
-	
-	private void calculateRates(Table table) {
-		players = new ArrayList<>(table.players);
-		int points = 0;
-		
-		for (List commonCards : possibleCommonCards) {
-			//each point is 100% of current common cards    //TODO: clear points after calculation
-			points++;
-			
-			for (Player player : players) {
-				//set current possible common cards as table common cards
-				player.setStats(table, commonCards);
-			}
-			
-			sortPlayersStats();
-			calculateWinningRates();
-			
-			for (Player player : players) {
-				player.points += player.stats.winningRate;
-			}
-			
-		}
-		
-		//convert points into rates
-		for (Player player : players) {
-			player.stats.winningRate = player.points / points;
-			//reset points
-			player.points = 0;
-		}
-		
-		sortByWinningRate();
-	}
-	
-//	private void calculateTurnRates(Table table) {
-////		for (List deck : possibleCommonCards) {
-////			System.out.println(Card.toShortStrings(deck, true));
-////		}
-//	}
-	
-	private void calculateWinningRates() {
-		//all the winners should have hand as player at [0]
-		Player winningStats = players.get(0);
-		
-		//all the winners would divide rate
-		List<Player> winnersStats = new ArrayList<>();
-		for (Player playerStats : players) {
-			if (playerStats.stats.ranking == winningStats.stats.ranking &&
-					isSameHandsRanks(playerStats.stats.rankingKickers, winningStats.stats.rankingKickers)) {
-				winnersStats.add(playerStats);
-			}
-		}
-		
-		//divide rates (to three decimal)
-		double winnersRate = 1.0 / winnersStats.size();
-		winnersRate = Math.round(winnersRate * 1000) / 1000d;
-		for (Player winnerStats : winnersStats) {
-			winnerStats.stats.winningRate = winnersRate;
-		}
-		
-		//all losers rates = 0
-		for (Player playerStats : players) {
-			//he's not winner
-			if (playerStats.stats.winningRate == -1.0) {
-				playerStats.stats.winningRate = 0.0;
-			}
 		}
 	}
 	
