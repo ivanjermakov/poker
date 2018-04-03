@@ -36,6 +36,12 @@ public class Stats {
 	
 	public double winningRate = -1.0;
 	
+	public Stats(Table table, Player player, List commonCards) {
+		setPossibleHands((ArrayList) commonCards, player.hand);
+		setBestHand();
+		ranking = possibleBestHands.get(0).ranking;
+		rankingKickers = possibleBestHands.get(0).rankingKickers;
+	}
 	
 	public Stats(Table table, Player player) {
 		setPossibleHands((ArrayList) table.commonCards, player.hand);

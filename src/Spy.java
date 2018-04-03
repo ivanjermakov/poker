@@ -2,16 +2,18 @@ class Spy {
 	
 	public Spy(Table table) {
 		Calculator calculator = new Calculator(table);
+		
 		if (table.players.isEmpty()) return;
 		switch (calculator.state) {
 			case RIVER:
-				calculator.calculateStats();
+				calculator.sortPlayersStats();
 				calculator.calculateWinningRates(table);
 				calculator.showStats();
 				break;
 			case FLOP:
 			case TURN:
 				calculator.calculateWinningRates(table);
+				calculator.showRates();
 				break;
 		}
 	}

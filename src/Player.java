@@ -8,6 +8,8 @@ class Player {
 	
 	public Stats stats;
 	
+	public double points;
+	
 	
 	public Player(String name) {
 		this.name = name;
@@ -15,6 +17,11 @@ class Player {
 	
 	public void setStats(Table table) {
 		Stats stats = new Stats(table, this);
+		this.stats = stats.getStats();
+	}
+	
+	public void setStats(Table table, List<Card> commonCards) {
+		Stats stats = new Stats(table, this, commonCards);
 		this.stats = stats.getStats();
 	}
 	

@@ -4,9 +4,82 @@ import java.util.List;
 
 public class Calculator {
 	
-	private List<List<Card>> possibleDecks = new ArrayList<>();
+	private List<List<Card>> possibleCommonCards = new ArrayList<>();
 	public Table.State state = Table.State.PREFLOP;
 	public List<Player> players = new ArrayList<>();
+	
+	
+	public Calculator(Table table) {
+		state = table.state;
+		
+		
+		switch (state) {
+			case FLOP:
+				setPossibleFlopDecks(table.commonCards, table.cardDeck);
+				calculateRates(table);
+				break;
+			case TURN:
+				setPossibleTurnDecks(table.commonCards, table.cardDeck);
+				calculateRates(table);
+				break;
+			case RIVER:
+				for (Player player : table.players) {
+					player.setStats(table);
+					players.add(player);
+				}
+				break;
+		}
+	}
+	
+	public void calculateWinningRates(Table table) {
+		switch (state) {
+			case FLOP:
+			case TURN:
+				calculateRates(table);
+				break;
+			case RIVER:
+				calculateWinningRates();
+				sortPlayersStats();
+				break;
+			default:
+		}
+	}
+	
+	public void showStats() {
+		for (Player player : players) {
+			System.out.println(
+					Card.toShortStrings(player, true) + " " +
+							player.name + " has " +
+							player.stats.ranking + " " +
+							Card.toShortStrings(player.stats.rankingKickers, true) +
+							//format rate as ##.#%
+							"(" + Math.round((player.stats.winningRate * 100) * 1000) / 1000d + "%)"
+			);
+		}
+	}
+	
+	public void showRates() {
+		for (Player player : players) {
+			System.out.println(
+					Card.toShortStrings(player.hand, true) + " " +
+							player.name +
+							//format rate as ##.#%
+							" (" + Math.round((player.stats.winningRate * 100) * 1000) / 1000d + "%)"
+			);
+		}
+	}
+	
+	private static boolean isSameHandsRanks(List<Card> hand1, List<Card> hand2) {
+		if (hand1.isEmpty() && hand2.isEmpty()) return true;
+		if (hand1.size() == hand2.size()) {
+			for (int i = 0; i < hand1.size(); i++) {
+				if (hand1.get(i).rank.value != hand2.get(i).rank.value) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 	
 	private void sortByKickers() {
 		if (players.size() <= 1) return;
@@ -52,7 +125,7 @@ public class Calculator {
 		
 	}
 	
-	private void sortPlayersStats() {
+	public void sortPlayersStats() {
 		//sort by ranking
 		boolean isSorted = false;
 		while (!isSorted) {
@@ -102,13 +175,28 @@ public class Calculator {
 		sortByKickers();
 	}
 	
+	private void sortByWinningRate() {
+		boolean isSorted = false;
+		while (!isSorted) {
+			isSorted = true;
+			
+			for (int i = 0; i < players.size() - 1; i++) {
+				if (players.get(i).stats.winningRate < players.get(i + 1).stats.winningRate) {
+					isSorted = false;
+					Collections.swap(players, i, i + 1);
+				}
+			}
+			
+		}
+	}
+	
 	private void setPossibleFlopDecks(List<Card> flop, List<Card> cards) {
 		for (int i = 0; i < cards.size() - 1; i++) {
 			for (int j = i + 1; j < cards.size(); j++) {
 				List<Card> possibleDeck = new ArrayList<>(flop);
 				possibleDeck.add(cards.get(i));
 				possibleDeck.add(cards.get(j));
-				possibleDecks.add(possibleDeck);
+				possibleCommonCards.add(possibleDeck);
 			}
 		}
 	}
@@ -117,17 +205,49 @@ public class Calculator {
 		for (int i = 0; i < cards.size() - 1; i++) {
 			List<Card> possibleDeck = new ArrayList<>(turn);
 			possibleDeck.add(cards.get(i));
-			possibleDecks.add(possibleDeck);
+			possibleCommonCards.add(possibleDeck);
 		}
 	}
 	
-	private void calculateFlopRates() {
+	private void calculateRates(Table table) {
+		players = new ArrayList<>(table.players);
+		int points = 0;
+		
+		for (List commonCards : possibleCommonCards) {
+			//each point is 100% of current common cards    //TODO: clear points after calculation
+			points++;
+			
+			for (Player player : players) {
+				//set current possible common cards as table common cards
+				player.setStats(table, commonCards);
+			}
+			
+			sortPlayersStats();
+			calculateWinningRates();
+			
+			for (Player player : players) {
+				player.points += player.stats.winningRate;
+			}
+			
+		}
+		
+		//convert points into rates
+		for (Player player : players) {
+			player.stats.winningRate = player.points / points;
+			//reset points
+			player.points = 0;
+		}
+		
+		sortByWinningRate();
 	}
 	
-	private void calculateTurnRates() {
-	}
+//	private void calculateTurnRates(Table table) {
+////		for (List deck : possibleCommonCards) {
+////			System.out.println(Card.toShortStrings(deck, true));
+////		}
+//	}
 	
-	private void calculateRiverRates() {
+	private void calculateWinningRates() {
 		//all the winners should have hand as player at [0]
 		Player winningStats = players.get(0);
 		
@@ -154,69 +274,6 @@ public class Calculator {
 				playerStats.stats.winningRate = 0.0;
 			}
 		}
-	}
-	
-	private static boolean isSameHandsRanks(List<Card> hand1, List<Card> hand2) {
-		if (hand1.isEmpty() && hand2.isEmpty()) return true;
-		if (hand1.size() == hand2.size()) {
-			for (int i = 0; i < hand1.size(); i++) {
-				if (hand1.get(i).rank.value != hand2.get(i).rank.value) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-	
-	public Calculator(Table table) {
-		state = table.state;
-		switch (state) {
-			case RIVER:
-				for (Player player : table.players) {
-					player.setStats(table);
-					players.add(player);
-				}
-				break;
-			case TURN:
-				setPossibleTurnDecks(table.commonCards, table.cardDeck);
-				break;
-			case FLOP:
-				setPossibleFlopDecks(table.commonCards, table.cardDeck);
-				break;
-		}
-	}
-	
-	public void calculateWinningRates(Table table) {
-		switch (state) {
-			case FLOP:
-				calculateFlopRates();
-				break;
-			case TURN:
-				calculateTurnRates();
-				break;
-			case RIVER:
-				calculateRiverRates();
-				break;
-			default:
-		}
-	}
-	
-	public void calculateStats() {
-		sortPlayersStats();
-	}
-	
-	public void showStats() {
-		for (Player player : players) {
-			System.out.println(
-					Card.toShortStrings(player, true) + " " +
-							player.name + " has " +
-							player.stats.ranking + " " +
-							Card.toShortStrings(player.stats.rankingKickers, true) +
-							//format rate as ##.#%
-							"(" + Math.round((player.stats.winningRate * 100) * 1000) / 1000d + "%)"
-			);
-		}
-		
 	}
 	
 }
