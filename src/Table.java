@@ -157,7 +157,7 @@ public class Table {
 	}
 	
 	private void setFlop() {
-		if (!commonCards.isEmpty()) return;
+		if (commonCards != null) return;
 		List flop = new ArrayList<>();
 		
 		for (int i = 0; i < 3; i++) {

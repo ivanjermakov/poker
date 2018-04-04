@@ -1,6 +1,9 @@
+import java.security.cert.CollectionCertStoreParameters;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Stats {
 	
@@ -38,6 +41,7 @@ public class Stats {
 	
 	public Stats(Table table, Player player, List commonCards) {
 		setPossibleHands((ArrayList) commonCards, player.hand);
+		
 		setBestHand();
 		ranking = possibleBestHands.get(0).ranking;
 		rankingKickers = possibleBestHands.get(0).rankingKickers;
@@ -50,7 +54,11 @@ public class Stats {
 		rankingKickers = possibleBestHands.get(0).rankingKickers;
 	}
 	
-	public Stats() {
+	public Stats() {}
+	
+	public Stats(List bestHand, Ranking ranking) {
+		this.bestHand = bestHand;
+		this.ranking = ranking;
 	}
 	
 	public Stats getStats() {
@@ -204,71 +212,56 @@ public class Stats {
 	}
 	
 	private void setWithBestRanking() {
-		//get candidates with best ranking
 		//sort by rankings
-		boolean sorted = false;
-		
-		while (!sorted) {
-			sorted = true;
-			
-			for (int i = 0; i < possibleBestHands.size() - 1; i++) {
-				if (possibleBestHands.get(i).ranking.value < possibleBestHands.get(i + 1).ranking.value) {
-					sorted = false;
-					Collections.swap(possibleBestHands, i, i + 1);
-				}
-			}
-			
-		}
+		possibleBestHands.sort((e, e2) -> e2.ranking.value - e.ranking.value);
 		
 		//set with best ranking
-		List<Stats> withBestRanking = new ArrayList<>();
-		
-		int i = 0;
-		while (i < possibleBestHands.size() &&
-				possibleBestHands.get(0).ranking.value == possibleBestHands.get(i).ranking.value) {
-			withBestRanking.add(possibleBestHands.get(i));
-			i++;
-		}
-
-//		//sorting all another
-//		for (Stats stats : withBestRanking) {
-//			Table.sortCards(stats.bestHand);
-//		}
-		
-		possibleBestHands = withBestRanking;
+		possibleBestHands = possibleBestHands
+				.stream()
+				.filter(e -> e.ranking.equals(possibleBestHands.get(0).ranking))
+				.collect(Collectors.toList());
 	}
 	
-	private void sortByKickers() {
-		if (possibleBestHands.size() == 1) return;
-		//sort by biggest rank
-		boolean isSorted = false;
-		
-		while (!isSorted) {
-			for (int i = 0; i < possibleBestHands.size() - 1; i++) {
-				isSorted = true;
-				if (possibleBestHands.get(i).bestHand.get(0).rank.value <
-						possibleBestHands.get(i + 1).bestHand.get(0).rank.value) {
-					isSorted = false;
-					Collections.swap(possibleBestHands, i, i + 1);
-					break;
-				}
-			}
+	private void setWithBestRankingKickers() {
+		//all hands has same amount of kickers thus they has same ranking
+		if (possibleBestHands.get(0).rankingKickers.isEmpty()) return;
+		if (possibleBestHands.get(0).rankingKickers.size() >= 1) {
+			possibleBestHands.sort((e, e2) -> e2.rankingKickers.get(0).rank.value - e.rankingKickers.get(0).rank.value);
 		}
-		
+		possibleBestHands = possibleBestHands
+				.stream()
+				.filter(e -> e.rankingKickers.get(0).equals(possibleBestHands.get(0).rankingKickers.get(0)))
+				.collect(Collectors.toList());
+		if (possibleBestHands.get(0).rankingKickers.size() == 2) {
+			possibleBestHands.sort((e, e2) -> e2.rankingKickers.get(1).rank.value - e.rankingKickers.get(1).rank.value);
+			possibleBestHands = possibleBestHands
+					.stream()
+					.filter(e -> e.rankingKickers.get(1).equals(possibleBestHands.get(0).rankingKickers.get(1)))
+					.collect(Collectors.toList());
+		}
+	}
+	
+	private void setWithBestKickers() {
+		final int[] range = {0, 1, 2, 3, 4};
+		for (final int i : range) {
+			possibleBestHands.sort((e, e2) -> e2.bestHand.get(i).rank.value - e.bestHand.get(i).rank.value);
+			possibleBestHands = possibleBestHands
+					.stream()
+					.filter(e -> e.bestHand.get(i).equals(possibleBestHands.get(0).bestHand.get(i)))
+					.collect(Collectors.toList());
+		}
 	}
 	
 	private void setBestHand() {
 		setWithBestRanking();
-		sortByKickers();
+		setWithBestKickers();
 		
 		bestHand = possibleBestHands.get(0).bestHand;
 	}
 	
 	private void setPossibleHands(ArrayList<Card> commonCards, List<Card> hand) {
 		//table hand only
-		Stats stats = new Stats();
-		stats.bestHand = commonCards;
-		stats.ranking = getRanking(commonCards);
+		Stats stats = new Stats(commonCards, getRanking(commonCards));
 		stats.rankingKickers = getRankingKickers(stats);
 		possibleBestHands.add(stats);
 		
@@ -278,9 +271,7 @@ public class Stats {
 		for (int i = 0; i < 5; i++) {
 			currentCommonCards = (ArrayList) commonCards.clone();
 			currentCommonCards.set(i, hand.get(0));
-			stats = new Stats();
-			stats.bestHand = currentCommonCards;
-			stats.ranking = getRanking(currentCommonCards);
+			stats = new Stats(currentCommonCards, getRanking(currentCommonCards));
 			stats.rankingKickers = getRankingKickers(stats);
 			possibleBestHands.add(stats);
 		}
@@ -289,9 +280,7 @@ public class Stats {
 		for (int i = 0; i < 5; i++) {
 			currentCommonCards = (ArrayList) commonCards.clone();
 			currentCommonCards.set(i, hand.get(1));
-			stats = new Stats();
-			stats.bestHand = currentCommonCards;
-			stats.ranking = getRanking(currentCommonCards);
+			stats = new Stats(currentCommonCards, getRanking(currentCommonCards));
 			stats.rankingKickers = getRankingKickers(stats);
 			possibleBestHands.add(stats);
 		}
@@ -303,18 +292,14 @@ public class Stats {
 				currentCommonCards = (ArrayList) commonCards.clone();
 				currentCommonCards.set(i, hand.get(0));
 				currentCommonCards.set(j, hand.get(1));
-				stats = new Stats();
-				stats.bestHand = currentCommonCards;
-				stats.ranking = getRanking(currentCommonCards);
+				stats = new Stats(currentCommonCards, getRanking(currentCommonCards));
 				stats.rankingKickers = getRankingKickers(stats);
 				possibleBestHands.add(stats);
 				//second is first
 				currentCommonCards = (ArrayList) commonCards.clone();
 				currentCommonCards.set(i, hand.get(1));
 				currentCommonCards.set(j, hand.get(0));
-				stats = new Stats();
-				stats.bestHand = currentCommonCards;
-				stats.ranking = getRanking(currentCommonCards);
+				stats = new Stats(currentCommonCards, getRanking(currentCommonCards));
 				stats.rankingKickers = getRankingKickers(stats);
 				possibleBestHands.add(stats);
 			}
