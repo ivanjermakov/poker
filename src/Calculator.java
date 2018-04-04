@@ -59,21 +59,10 @@ public class Calculator {
 	
 	public void sortPlayersStats() {
 		//sort by ranking
-		boolean isSorted = false;
-		while (!isSorted) {
-			isSorted = true;
-			
-			for (int i = 0; i < players.size() - 1; i++) {
-				if (players.get(i).stats.ranking.value < players.get(i + 1).stats.ranking.value) {
-					isSorted = false;
-					Collections.swap(players, i, i + 1);
-				}
-			}
-			
-		}
+		players.sort((e, e2) -> (e2.stats.ranking.value - e.stats.ranking.value));
 		
 		//sort by ranking kickers
-		isSorted = false;
+		boolean isSorted = false;
 		while (!isSorted) {
 			isSorted = true;
 			
@@ -229,18 +218,8 @@ public class Calculator {
 	}
 	
 	private void sortByWinningRate() {
-		boolean isSorted = false;
-		while (!isSorted) {
-			isSorted = true;
-			
-			for (int i = 0; i < players.size() - 1; i++) {
-				if (players.get(i).stats.winningRate < players.get(i + 1).stats.winningRate) {
-					isSorted = false;
-					Collections.swap(players, i, i + 1);
-				}
-			}
-			
-		}
+		//TODO: investigate why
+		players.sort((e, e2) -> (int) (e2.stats.winningRate * 1000 - e.stats.winningRate * 1000));
 	}
 	
 	private void setPossibleFlopDecks(List<Card> flop, List<Card> cards) {
