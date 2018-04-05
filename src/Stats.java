@@ -54,7 +54,8 @@ public class Stats {
 		rankingKickers = possibleBestHands.get(0).rankingKickers;
 	}
 	
-	public Stats() {}
+	public Stats() {
+	}
 	
 	public Stats(List bestHand, Ranking ranking) {
 		this.bestHand = bestHand;
@@ -242,14 +243,13 @@ public class Stats {
 	}
 	
 	private void setWithBestKickers() {
-		final int[] range = {0, 1, 2, 3, 4};
-		for (final int i : range) {
+		IntStream.range(0, 5).forEach(i -> {
 			possibleBestHands.sort((e, e2) -> e2.bestHand.get(i).rank.value - e.bestHand.get(i).rank.value);
 			possibleBestHands = possibleBestHands
 					.stream()
 					.filter(e -> e.bestHand.get(i).equals(possibleBestHands.get(0).bestHand.get(i)))
 					.collect(Collectors.toList());
-		}
+		});
 	}
 	
 	private void setBestHand() {
