@@ -18,6 +18,7 @@ public class Table {
 	public State state = State.PREFLOP;
 	
 	
+	//TODO: modernize
 	public static void sortCards(List<Card> cards) {
 		boolean isSorted = false;
 		
