@@ -225,21 +225,13 @@ public class Stats {
 	
 	private void setWithBestRankingKickers() {
 		//all hands has same amount of kickers thus they has same ranking
-		if (possibleBestHands.get(0).rankingKickers.isEmpty()) return;
-		if (possibleBestHands.get(0).rankingKickers.size() >= 1) {
-			possibleBestHands.sort((e, e2) -> e2.rankingKickers.get(0).rank.value - e.rankingKickers.get(0).rank.value);
-		}
-		possibleBestHands = possibleBestHands
-				.stream()
-				.filter(e -> e.rankingKickers.get(0).equals(possibleBestHands.get(0).rankingKickers.get(0)))
-				.collect(Collectors.toList());
-		if (possibleBestHands.get(0).rankingKickers.size() == 2) {
-			possibleBestHands.sort((e, e2) -> e2.rankingKickers.get(1).rank.value - e.rankingKickers.get(1).rank.value);
+		IntStream.range(0, 2).forEach(i -> {
+			possibleBestHands.sort((e, e2) -> e2.rankingKickers.get(i).rank.value - e.rankingKickers.get(i).rank.value);
 			possibleBestHands = possibleBestHands
 					.stream()
-					.filter(e -> e.rankingKickers.get(1).equals(possibleBestHands.get(0).rankingKickers.get(1)))
+					.filter(e -> e.rankingKickers.get(i).equals(possibleBestHands.get(0).rankingKickers.get(i)))
 					.collect(Collectors.toList());
-		}
+		});
 	}
 	
 	private void setWithBestKickers() {

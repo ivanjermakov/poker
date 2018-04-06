@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Calculator {
@@ -62,34 +63,24 @@ public class Calculator {
 		players.sort((e, e2) -> (e2.stats.ranking.value - e.stats.ranking.value));
 		
 		//sort by ranking kickers
-		boolean isSorted = false;
-		while (!isSorted) {
-			isSorted = true;
+		players.sort((o1, o2) -> {
+			//o1 and o2 has the same amount of ranking kickers
+			if (o1.stats.rankingKickers == null || o2.stats.rankingKickers == null ||
+					o1.stats.rankingKickers.size() != o2.stats.rankingKickers.size()) return 0;
 			
-			for (int i = 0; i < players.size() - 1; i++) {
-				
-				if (players.get(i).stats.ranking == players.get(i + 1).stats.ranking &&
-						!players.get(i).stats.rankingKickers.isEmpty()) {
-					if (players.get(i).stats.rankingKickers.get(0).rank.value <
-							players.get(i + 1).stats.rankingKickers.get(0).rank.value) {
-						isSorted = false;
-						Collections.swap(players, i, i + 1);
-					} else if (players.get(i).stats.rankingKickers.get(0).rank ==
-							players.get(i + 1).stats.rankingKickers.get(0).rank) {
-						if (players.get(i).stats.rankingKickers.size() == 2 &&
-								players.get(i + 1).stats.rankingKickers.size() == 2) {
-							if (players.get(i).stats.rankingKickers.get(1).rank.value <
-									players.get(i + 1).stats.rankingKickers.get(1).rank.value) {
-								isSorted = false;
-								Collections.swap(players, i, i + 1);
-							}
-						}
+			if (o1.stats.ranking == o2.stats.ranking &&
+					o1.stats.rankingKickers.size() == o2.stats.rankingKickers.size() &&
+					o1.stats.rankingKickers.size() >= 1) {
+				if (o1.stats.rankingKickers.size() == 2) {
+					if (o1.stats.rankingKickers.get(0).rank.value == o2.stats.rankingKickers.get(0).rank.value) {
+						return o2.stats.rankingKickers.get(1).rank.value - o1.stats.rankingKickers.get(1).rank.value;
 					}
 				}
-				
+				return o2.stats.rankingKickers.get(0).rank.value - o1.stats.rankingKickers.get(0).rank.value;
 			}
 			
-		}
+			return 0;
+		});
 		
 		//sort by kickers (with the same ranking kickers)
 		sortByKickers();
@@ -169,51 +160,27 @@ public class Calculator {
 	
 	private void sortByKickers() {
 		if (players.size() <= 1) return;
-		
-		boolean isSorted = false;
-		
-		while (!isSorted) {
-			for (int i = 0; i < players.size() - 1; i++) {
-				isSorted = true;
-				//same ranking kickers
-				//first kicker is the same
-				//first col
-				if (players.get(i).stats.ranking == players.get(i + 1).stats.ranking &&
-						players.get(i).stats.bestHand.get(0).rank.value <
-								players.get(i + 1).stats.bestHand.get(0).rank.value) {
-					//has ranking kickers
-					if (players.get(i).stats.rankingKickers.size() >= 1 &&
-							players.get(i + 1).stats.rankingKickers.size() >= 1) {
-						if (players.get(i).stats.rankingKickers.get(0).rank ==
-								players.get(i + 1).stats.rankingKickers.get(0).rank) {
-							//second ranking kicker is present and the same
-							if (players.get(i).stats.rankingKickers.size() == 2 &&
-									players.get(i + 1).stats.rankingKickers.size() == 2) {
-								if (players.get(i).stats.rankingKickers.get(0).rank ==
-										players.get(i + 1).stats.rankingKickers.get(0).rank &&
-										players.get(i).stats.ranking == players.get(i + 1).stats.ranking &&
-										players.get(i).stats.bestHand.get(0).rank.value <
-												players.get(i + 1).stats.bestHand.get(0).rank.value) {
-									isSorted = false;
-									Collections.swap(players, i, i + 1);
-									break;
-								}
-							} else {
-								isSorted = false;
-								Collections.swap(players, i, i + 1);
-								break;
+
+//		same ranking kickers
+		players.sort((o1, o2) -> {
+			if (o1.stats.ranking == o2.stats.ranking && isSameHandsRanks(o1.stats.rankingKickers, o2.stats.rankingKickers)) {
+				if (o1.stats.bestHand.get(0).rank.value != o2.stats.bestHand.get(0).rank.value) {
+					return o2.stats.bestHand.get(0).rank.value - o1.stats.bestHand.get(0).rank.value;
+				} else {
+					
+					//if previous card is the same
+					for (int i = 1; i < 5; i++) {
+						if (o1.stats.bestHand.get(i - 1).rank.value == o2.stats.bestHand.get(i - 1).rank.value) {
+							if (o1.stats.bestHand.get(i).rank.value != o2.stats.bestHand.get(i).rank.value) {
+								return o2.stats.bestHand.get(i).rank.value - o1.stats.bestHand.get(i).rank.value;
 							}
 						}
-						//no ranking kickers
-					} else {
-						isSorted = false;
-						Collections.swap(players, i, i + 1);
-						break;
 					}
 					
 				}
 			}
-		}
+			return 0;
+		});
 		
 	}
 	
