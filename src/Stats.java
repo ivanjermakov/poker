@@ -1,6 +1,4 @@
-import java.security.cert.CollectionCertStoreParameters;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -52,9 +50,6 @@ public class Stats {
 		setBestHand();
 		ranking = possibleBestHands.get(0).ranking;
 		rankingKickers = possibleBestHands.get(0).rankingKickers;
-	}
-	
-	public Stats() {
 	}
 	
 	public Stats(List bestHand, Ranking ranking) {

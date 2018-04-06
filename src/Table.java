@@ -20,29 +20,13 @@ public class Table {
 	
 	//TODO: modernize
 	public static void sortCards(List<Card> cards) {
-		boolean isSorted = false;
-		
-		while (!isSorted) {
-			isSorted = true;
-			
-			for (int i = 0; i < cards.size() - 1; i++) {
-				if (cards.get(i).rank.value < cards.get(i + 1).rank.value) {
-					isSorted = false;
-					Collections.swap(cards, i, i + 1);
-				}
+		cards.sort((o1, o2) -> {
+			if (o1.rank == o2.rank) {
+				return o2.suit.value - o1.suit.value;
 			}
 			
-			for (int i = 0; i < cards.size() - 1; i++) {
-				if (cards.get(i).rank == cards.get(i + 1).rank) {
-					if (cards.get(i).suit.value < cards.get(i + 1).suit.value) {
-						isSorted = false;
-						Collections.swap(cards, i, i + 1);
-					}
-				}
-			}
-			
-		}
-		
+			return o2.rank.value - o1.rank.value;
+		});
 	}
 	
 	public Table(int playersAmount) {
@@ -90,8 +74,8 @@ public class Table {
 		if (players.isEmpty()) return;
 		state = State.FLOP;
 		System.out.print("Flop: ");
-		for (int i = 0; i < 3; i++) {
-			System.out.print(Card.toShortString(commonCards.get(i), true) + " ");
+		for (Card card : commonCards) {
+			System.out.print(Card.toShortString(card, true) + " ");
 		}
 		System.out.println();
 		

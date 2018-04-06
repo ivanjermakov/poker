@@ -1,16 +1,16 @@
 public class Main {
 	
 	public static void main(String[] args) {
-		Table table = new Table(23);
+		Table table = new Table(10);
 		for (int i = 0; i < 1; i++) {
 			table.newGame();
 			
 			//TODO: play silently
 //			table.showPlayersHands();
-			table.showCommonCards();
-//			table.showFlop();
-//			table.showTurn();
-//			table.showRiver();
+//			table.showCommonCards();
+			table.showFlop();
+			table.showTurn();
+			table.showRiver();
 		}
 		
 	}
