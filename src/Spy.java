@@ -9,7 +9,6 @@ class Spy {
 			case RIVER:
 				calculator.sortPlayersStats();
 				calculator.calculateWinningRates();
-				calculator.sortPlayersStats();
 				calculator.showStats();
 				break;
 			case FLOP:

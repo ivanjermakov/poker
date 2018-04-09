@@ -8,7 +8,7 @@ class Player {
 	
 	public Stats stats;
 	
-	public double summaryRate;
+	public double winRate;
 	
 	
 	public Player(String name) {
@@ -16,8 +16,7 @@ class Player {
 	}
 	
 	public void setStats(Table table) {
-		Stats stats = new Stats(table, this);
-		this.stats = stats.getStats();
+		this.stats = new Stats(table, this).getStats();
 	}
 	
 	public void setStats(Table table, List commonCards) {

@@ -101,16 +101,16 @@ public class Calculator {
 			calculateWinningRates();
 			
 			for (Player player : players) {
-				player.summaryRate += player.stats.winningRate;
+				player.winRate += player.stats.winningRate;
 			}
 			
 		}
 		
-		//convert summaryRate into rates
+		//convert winRate into rates
 		for (Player player : players) {
-			player.stats.winningRate = player.summaryRate / summaryRate;
-			//reset summaryRate
-			player.summaryRate = 0;
+			player.stats.winningRate = player.winRate / summaryRate;
+			//reset winRate
+			player.winRate = 0;
 		}
 		
 		sortByWinningRate();

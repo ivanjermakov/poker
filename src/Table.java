@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class Table {
 	
@@ -9,6 +10,7 @@ public class Table {
 		RIVER
 	}
 	
+	//TODO: generate using shuffle
 	public List<Card> cardDeck;
 	
 	public List<Card> commonCards;
@@ -18,7 +20,6 @@ public class Table {
 	public State state = State.PREFLOP;
 	
 	
-	//TODO: modernize
 	public static void sortCards(List<Card> cards) {
 		cards.sort((o1, o2) -> {
 			if (o1.rank == o2.rank) {
@@ -31,9 +32,10 @@ public class Table {
 	
 	public Table(int playersAmount) {
 		if (playersAmount > 23) return;
-		for (int i = 0; i < playersAmount; i++) {
-			addPlayer("Player " + Integer.toString(i + 1));
-		}
+		
+		IntStream
+				.range(0, playersAmount)
+				.forEach(e -> addPlayer("Player " + Integer.toString(e + 1)));
 	}
 	
 	public void addPlayer(String name) {

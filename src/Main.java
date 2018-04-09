@@ -1,7 +1,7 @@
 public class Main {
 	
 	public static void main(String[] args) {
-		Table table = new Table(10);
+		Table table = new Table(8);
 		for (int i = 0; i < 1; i++) {
 			table.newGame();
 			
