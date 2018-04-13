@@ -3,6 +3,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Calculator {
@@ -39,11 +40,11 @@ public class Calculator {
 		String out = "";
 		for (Player player : players) {
 			out += Card.toShortStrings(player, colored) + " " +
-							player.name + " has " +
-							player.stats.ranking + " " +
-							Card.toShortStrings(player.stats.rankingKickers, colored) +
-							//format rate as ##.#%
-							"(" + Math.round((player.stats.winningRate * 100) * 1000) / 1000d + "%)" + '\n';
+					player.name + " has " +
+					player.stats.ranking + " " +
+					Card.toShortStrings(player.stats.rankingKickers, colored) +
+					//format rate as ##.#%
+					"(" + Math.round((player.stats.winningRate * 100) * 1000) / 1000d + "%)" + '\n';
 		}
 		
 		return out;
@@ -63,6 +64,14 @@ public class Calculator {
 	
 	//TODO: show outs if percentage is lower than 20%
 	public void showRates() {
+		switch (state) {
+			case FLOP:
+				System.out.println("-- FLOP:");
+				break;
+			case TURN:
+				System.out.println("-- TURN:");
+				break;
+		}
 		for (Player player : players) {
 			System.out.println(
 					Card.toShortStrings(player.hand, true) + " " +
@@ -201,7 +210,7 @@ public class Calculator {
 	}
 	
 	private void sortByWinningRate() {
-		players.sort((e, e2) -> (int) (e2.stats.winningRate - e.stats.winningRate));
+		players.sort((o1, o2) -> Double.compare(o2.stats.winningRate, o1.stats.winningRate));
 	}
 	
 	private void setPossibleFlopDecks(List<Card> flop, List<Card> cards) {

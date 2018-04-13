@@ -14,8 +14,8 @@ class Spy {
 			case RIVER:
 				calculator.sortPlayersStats();
 				calculator.calculateWinningRates();
-//				System.out.println(calculator.getStats(true));
-				calculator.printStats("output.txt");
+				System.out.println(calculator.getStats(true));
+//				calculator.printStats("output.txt");
 				break;
 		}
 		

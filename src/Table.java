@@ -30,7 +30,9 @@ public class Table {
 	}
 	
 	public Table(int playersAmount) {
-		if (playersAmount > 23) return;
+		if (playersAmount > 23) {
+			throw new IllegalArgumentException("Players amount cannot be larger than 23");
+		}
 		
 		IntStream
 				.range(0, playersAmount)
@@ -48,6 +50,10 @@ public class Table {
 		setHands();
 	}
 	
+	public void showResults() {
+		new Spy(this);
+	}
+	
 	public void showPlayersHands() {
 		if (players.size() > 23) return;
 		for (int i = 0; i < players.size(); i++) {
@@ -59,21 +65,32 @@ public class Table {
 	
 	public void showCommonCards() {
 		setCommonCards();
-		sortCards(commonCards);
-		
-		state = State.RIVER;
-		System.out.print("Common cards: ");
-		System.out.print(Card.toShortStrings(commonCards, true) + " ");
-		System.out.println();
+		System.out.print("Common cards: " + Card.toShortStrings(commonCards, true) + "\n");
 		
 		new Spy(this);
 	}
 	
+	public void setCommonCards() {
+		if (commonCards != null) {
+			throw new IllegalStateException("Unable to set common cards");
+		}
+		
+		List newCommonCards = new ArrayList<>();
+		
+		for (int i = 0; i < 5; i++) {
+			newCommonCards.add(cardDeck.get(0));
+			cardDeck.remove(cardDeck.get(0));
+		}
+		
+		this.commonCards = newCommonCards;
+		
+		sortCards(commonCards);
+		state = State.RIVER;
+	}
+	
 	public void showFlop() {
 		setFlop();
-		sortCards(commonCards);
-		if (players.isEmpty()) return;
-		state = State.FLOP;
+		
 		System.out.print("Flop: ");
 		for (Card card : commonCards) {
 			System.out.print(Card.toShortString(card, true) + " ");
@@ -85,34 +102,72 @@ public class Table {
 	
 	public void showTurn() {
 		setTurn();
-		sortCards(commonCards);
-		if (players.isEmpty()) return;
-		state = State.TURN;
-		System.out.print("Turn: " + Card.toShortString(commonCards.get(3), true) + " ");
-		System.out.println();
+		
+		System.out.print("Turn: " + Card.toShortString(commonCards.get(3), true) + " " + '\n');
 		
 		new Spy(this);
 	}
 	
 	public void showRiver() {
 		setRiver();
-		sortCards(commonCards);
-		if (players.isEmpty()) return;
-		state = State.RIVER;
-		System.out.print("River: " + Card.toShortString(commonCards.get(4), true) + " ");
-		System.out.println();
+		
+		System.out.print("River: " + Card.toShortString(commonCards.get(4), true) + " " + '\n');
 		
 		new Spy(this);
 	}
 	
-	private void add(Card currentCard) {
-		for (Card card : cardDeck) {
-			if (card.rank.value == currentCard.rank.value &&
-					card.suit.value == currentCard.suit.value) {
-				return;
-			}
+	public void setFlop() {
+		if (commonCards != null) {
+			throw new IllegalStateException("Unable to set flop");
 		}
-		cardDeck.add(currentCard);
+		
+		if (commonCards != null) return;
+		List flop = new ArrayList<>();
+		
+		for (int i = 0; i < 3; i++) {
+			flop.add(cardDeck.get(0));
+			cardDeck.remove(cardDeck.get(0));
+		}
+		
+		commonCards = flop;
+		
+		sortCards(commonCards);
+		if (players.isEmpty()) return;
+		state = State.FLOP;
+	}
+	
+	public void setTurn() {
+		if (commonCards == null || commonCards.size() != 3) {
+			throw new IllegalStateException("Unable to set turn");
+		}
+		
+		Card card;
+		
+		card = cardDeck.get(0);
+		cardDeck.remove(cardDeck.get(0));
+		
+		commonCards.add(card);
+		
+		sortCards(commonCards);
+		if (players.isEmpty()) return;
+		state = State.TURN;
+	}
+	
+	public void setRiver() {
+		if (commonCards == null || commonCards.size() != 4) {
+			throw new IllegalStateException("Unable to set river");
+		}
+		
+		Card card;
+		
+		card = cardDeck.get(0);
+		cardDeck.remove(cardDeck.get(0));
+		
+		commonCards.add(card);
+		
+		sortCards(commonCards);
+		if (players.isEmpty()) return;
+		state = State.RIVER;
 	}
 	
 	private void setCardDeck() {
@@ -130,49 +185,6 @@ public class Table {
 			player.hand = getHand();
 			sortCards(player.hand);
 		}
-	}
-	
-	private void setCommonCards() {
-		List newCommonCards = new ArrayList<>();
-		
-		for (int i = 0; i < 5; i++) {
-			newCommonCards.add(cardDeck.get(0));
-			cardDeck.remove(cardDeck.get(0));
-		}
-		
-		this.commonCards = newCommonCards;
-	}
-	
-	private void setFlop() {
-		if (commonCards != null) return;
-		List flop = new ArrayList<>();
-		
-		for (int i = 0; i < 3; i++) {
-			flop.add(cardDeck.get(0));
-			cardDeck.remove(cardDeck.get(0));
-		}
-		
-		commonCards = flop;
-	}
-	
-	private void setTurn() {
-		if (commonCards.size() != 3) return;
-		Card card;
-		
-		card = cardDeck.get(0);
-		cardDeck.remove(cardDeck.get(0));
-		
-		commonCards.add(card);
-	}
-	
-	private void setRiver() {
-		if (commonCards.size() != 4) return;
-		Card card;
-		
-		card = cardDeck.get(0);
-		cardDeck.remove(cardDeck.get(0));
-		
-		commonCards.add(card);
 	}
 	
 	private List getHand() {
