@@ -124,7 +124,8 @@ public class Calculator {
 		List<Player> winnersStats = new ArrayList<>();
 		for (Player playerStats : players) {
 			if (playerStats.stats.ranking == winningStats.stats.ranking &&
-					isSameHandsRanks(playerStats.stats.rankingKickers, winningStats.stats.rankingKickers)) {
+					isSameHandsRanks(playerStats.stats.rankingKickers, winningStats.stats.rankingKickers) &&
+					isSameHandsRanks(playerStats.stats.bestHand, winningStats.stats.bestHand)) {
 				winnersStats.add(playerStats);
 			}
 		}

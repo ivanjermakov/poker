@@ -10,8 +10,7 @@ public class Table {
 		RIVER
 	}
 	
-	//TODO: generate using shuffle
-	public List<Card> cardDeck;
+	public List<Card> cardDeck = new ArrayList<>();
 	
 	public List<Card> commonCards;
 	
@@ -117,12 +116,13 @@ public class Table {
 	}
 	
 	private void setCardDeck() {
-		cardDeck = new ArrayList<>();
-		
-		while (cardDeck.size() != 52) {
-			Card card = new Card();
-			add(card);
+		for (int i = 0; i < Card.Rank.values().length; i++) {
+			for (int j = 0; j < Card.Suit.values().length; j++) {
+				cardDeck.add(new Card(Card.Rank.values()[i], Card.Suit.values()[j]));
+			}
 		}
+		
+		Collections.shuffle(cardDeck);
 	}
 	
 	private void setHands() {

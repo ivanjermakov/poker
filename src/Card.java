@@ -47,6 +47,11 @@ class Card {
 		suit = Suit.values()[new Random().nextInt(Suit.values().length)];
 	}
 	
+	public Card(Rank rank, Suit suit) {
+		this.rank = rank;
+		this.suit = suit;
+	}
+	
 	public static String toShortString(Card card, boolean colored) {
 		String rank;
 		switch (card.rank) {
