@@ -189,8 +189,8 @@ class Card {
 					rank = "und";
 			}
 			
-			if (card == player.hand.get(0) ||
-					card == player.hand.get(1))  {
+			if (colored && (card == player.hand.get(0) ||
+					card == player.hand.get(1)))  {
 				rank = "\u001B[32m" + rank + "\u001B[0m";
 			}
 			

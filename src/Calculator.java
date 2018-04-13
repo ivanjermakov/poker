@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,16 +35,29 @@ public class Calculator {
 		}
 	}
 	
-	public void showStats() {
+	public String getStats(boolean colored) {
+		String out = "";
 		for (Player player : players) {
-			System.out.println(
-					Card.toShortStrings(player, true) + " " +
+			out += Card.toShortStrings(player, colored) + " " +
 							player.name + " has " +
 							player.stats.ranking + " " +
-							Card.toShortStrings(player.stats.rankingKickers, true) +
+							Card.toShortStrings(player.stats.rankingKickers, colored) +
 							//format rate as ##.#%
-							"(" + Math.round((player.stats.winningRate * 100) * 1000) / 1000d + "%)"
-			);
+							"(" + Math.round((player.stats.winningRate * 100) * 1000) / 1000d + "%)" + '\n';
+		}
+		
+		return out;
+	}
+	
+	public void printStats(String PATH) {
+		File log = new File(PATH);
+		try {
+			PrintWriter out = new PrintWriter(new FileWriter(log, true));
+			out.append("---------------- New game ----------------" + '\n');
+			out.append(getStats(false));
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -184,8 +201,7 @@ public class Calculator {
 	}
 	
 	private void sortByWinningRate() {
-		//TODO: investigate why
-		players.sort((e, e2) -> (int) (e2.stats.winningRate * 1000 - e.stats.winningRate * 1000));
+		players.sort((e, e2) -> (int) (e2.stats.winningRate - e.stats.winningRate));
 	}
 	
 	private void setPossibleFlopDecks(List<Card> flop, List<Card> cards) {

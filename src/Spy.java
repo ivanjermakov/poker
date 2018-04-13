@@ -6,15 +6,16 @@ class Spy {
 		if (table.players.isEmpty()) return;
 		
 		switch (calculator.state) {
-			case RIVER:
-				calculator.sortPlayersStats();
-				calculator.calculateWinningRates();
-				calculator.showStats();
-				break;
 			case FLOP:
 			case TURN:
 				calculator.calculateRates(table);
 				calculator.showRates();
+				break;
+			case RIVER:
+				calculator.sortPlayersStats();
+				calculator.calculateWinningRates();
+//				System.out.println(calculator.getStats(true));
+				calculator.printStats("output.txt");
 				break;
 		}
 		
