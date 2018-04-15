@@ -8,7 +8,7 @@ public class Main {
 //			table.setCommonCards();
 //			table.setFlop();
 //			table.showResults();
-			
+			table.showPlayersHands();
 			table.showFlop();
 			table.showTurn();
 			table.showRiver();

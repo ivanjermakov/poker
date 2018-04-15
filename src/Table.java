@@ -1,4 +1,6 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class Table {
@@ -56,10 +58,8 @@ public class Table {
 	
 	public void showPlayersHands() {
 		if (players.size() > 23) return;
-		for (int i = 0; i < players.size(); i++) {
-			System.out.print("Player " + (i + 1) + ": ");
-			players.get(i).printHand();
-			System.out.println();
+		for (Player player : players) {
+			System.out.print(player.name + " : " + Card.toShortStrings(player.hand, true) + '\n');
 		}
 	}
 	
@@ -90,19 +90,13 @@ public class Table {
 	
 	public void showFlop() {
 		setFlop();
-		
-		System.out.print("Flop: ");
-		for (Card card : commonCards) {
-			System.out.print(Card.toShortString(card, true) + " ");
-		}
-		System.out.println();
+		System.out.print("Flop: " + Card.toShortStrings(commonCards, true) + " \n");
 		
 		new Spy(this);
 	}
 	
 	public void showTurn() {
 		setTurn();
-		
 		System.out.print("Turn: " + Card.toShortString(commonCards.get(3), true) + " " + '\n');
 		
 		new Spy(this);

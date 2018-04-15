@@ -24,10 +24,4 @@ class Player {
 		this.stats = stats.getStats();
 	}
 	
-	public void printHand() {
-		for (Card card : hand) {
-			System.out.print(Card.toShortString(card, true) + " ");
-		}
-	}
-	
 }

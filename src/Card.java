@@ -53,7 +53,7 @@ class Card {
 	}
 	
 	public static String toShortString(Card card, boolean colored) {
-		String rank;
+		String rank = "";
 		switch (card.rank) {
 			case TWO:
 				rank = "2";
@@ -94,11 +94,9 @@ class Card {
 			case ACE:
 				rank = "A";
 				break;
-			default:
-				rank = "und";
 		}
 		
-		String suit;
+		String suit = "";
 		switch (card.suit) {
 			case CLUBS:
 				suit = "♣";
@@ -120,21 +118,19 @@ class Card {
 					suit = "♦";
 				}
 				break;
-			default:
-				suit = "und";
 		}
 		
 		return rank + suit;
 	}
 	
 	public static String toShortStrings(List<Card> cards, boolean colored) {
-		StringBuilder string = new StringBuilder();
+		String string = "";
 		
 		for (Card card : cards) {
-			string.append(Card.toShortString(card, colored)).append(" ");
+			string += Card.toShortString(card, colored) + " ";
 		}
 		
-		return string.toString();
+		return string;
 	}
 	
 	public static String toShortStrings(Player player, boolean colored) {
@@ -144,7 +140,7 @@ class Card {
 		}
 		String string = "";
 		for (Card card : player.stats.bestHand) {
-			String rank;
+			String rank = "";
 			switch (card.rank) {
 				case TWO:
 					rank = "2";
@@ -185,8 +181,6 @@ class Card {
 				case ACE:
 					rank = "A";
 					break;
-				default:
-					rank = "und";
 			}
 			
 			if (colored && (card == player.hand.get(0) ||
@@ -194,7 +188,7 @@ class Card {
 				rank = "\u001B[32m" + rank + "\u001B[0m";
 			}
 			
-			String suit;
+			String suit = "";
 			switch (card.suit) {
 				case CLUBS:
 					suit = "♣";
@@ -216,8 +210,6 @@ class Card {
 						suit = "♦";
 					}
 					break;
-				default:
-					suit = "und";
 			}
 			
 			string += rank + suit + " ";
