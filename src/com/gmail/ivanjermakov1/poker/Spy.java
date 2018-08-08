@@ -1,3 +1,5 @@
+package com.gmail.ivanjermakov1.poker;
+
 class Spy {
 	
 	public Spy(Table table) {

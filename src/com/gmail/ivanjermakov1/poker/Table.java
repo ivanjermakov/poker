@@ -1,3 +1,5 @@
+package com.gmail.ivanjermakov1.poker;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +40,7 @@ public class Table {
 		
 		IntStream
 				.range(0, playersAmount)
-				.forEach(e -> addPlayer("Player " + Integer.toString(e + 1)));
+				.forEach(e -> addPlayer("com.gmail.ivanjermakov1.poker.Player " + Integer.toString(e + 1)));
 	}
 	
 	public void addPlayer(String name) {
@@ -115,7 +117,6 @@ public class Table {
 			throw new IllegalStateException("Unable to set flop");
 		}
 		
-		if (commonCards != null) return;
 		List flop = new ArrayList<>();
 		
 		for (int i = 0; i < 3; i++) {

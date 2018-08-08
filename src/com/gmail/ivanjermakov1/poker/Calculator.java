@@ -1,3 +1,5 @@
+package com.gmail.ivanjermakov1.poker;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

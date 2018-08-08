@@ -1,3 +1,5 @@
+package com.gmail.ivanjermakov1.poker;
+
 import java.util.List;
 
 class Player {
